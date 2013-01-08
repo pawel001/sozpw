@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <class name="pl.edu.pw.mini.sozpw.dataaccess.models.Comment" table="comments" catalog="test">
+        <id name="commentId" type="java.lang.Integer">
+            <column name="idComments" />
+            <generator class="identity" />
+        </id>
+        <property name="text" type="string">
+            <column name="Text" length="500" not-null="true" unique="false" />
+        </property>
+        <property name="note_id" type="java.lang.Integer">
+            <column name="Note_id" not-null="true" unique="false" />
+        </property>
+        <property name="user_id" type="java.lang.Integer">
+            <column name="User_id" not-null="true" unique="false" />
+        </property>
+    </class>
+</hibernate-mapping>

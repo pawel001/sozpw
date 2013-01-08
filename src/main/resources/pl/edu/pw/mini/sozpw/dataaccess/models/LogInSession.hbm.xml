@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <class name="pl.edu.pw.mini.sozpw.dataaccess.models.LogInSession" table="sessions" catalog="test">
+        <id name="sessionId" type="java.lang.Integer">
+            <column name="idSessions" />
+            <generator class="identity" />
+        </id>
+        <property name="userId" type="java.lang.Integer">
+            <column name="user_id" not-null="true" unique="false" />
+        </property>
+        <property name="key" type="string">
+            <column name="keySession" not-null="true" unique="false" />
+        </property>
+    </class>
+</hibernate-mapping>

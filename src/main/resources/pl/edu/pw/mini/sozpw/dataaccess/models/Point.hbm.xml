@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <class name="pl.edu.pw.mini.sozpw.dataaccess.models.Point" table="points" catalog="test">
+        <id name="pointId" type="java.lang.Integer">
+            <column name="idPoints" />
+            <generator class="identity" />
+        </id>
+        <property name="longitude" type="float">
+            <column name="Longitude" not-null="true" unique="false" />
+        </property>
+        <property name="latitude" type="float">
+            <column name="Latitude" not-null="true" unique="false" />
+        </property>
+        <!-- <property name="note_id" type="java.lang.Integer">
+            <column name="note_id" not-null="true" unique="false" />
+        </property>-->
+        <many-to-one name="note" class="pl.edu.pw.mini.sozpw.dataaccess.models.Note" fetch="select">
+            <column name="Note_id" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

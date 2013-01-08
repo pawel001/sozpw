@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <class name="pl.edu.pw.mini.sozpw.dataaccess.models.Note" table="notes" catalog="test">
+        <id name="noteId" type="java.lang.Integer">
+            <column name="idNotes" />
+            <generator class="identity" />
+        </id>
+        <property name="topic" type="string">
+            <column name="Topic" length="255" not-null="true" unique="false" />
+        </property>
+        <property name="text" type="string">
+            <column name="Text" length="500" not-null="true" unique="false" />
+        </property>
+        <property name="cathegory_id" type="java.lang.Integer">
+            <column name="Cathegory_id" not-null="true" unique="false" />
+        </property>
+        <property name="user_id" type="java.lang.Integer">
+            <column name="User_id" not-null="false" unique="false" />
+        </property>
+        <property name="group_id" type="java.lang.Integer">
+            <column name="Group_id" not-null="false" unique="false" />
+        </property>
+        <property name="addressedUser_id" type="java.lang.Integer">
+            <column name="AddressedUser_id" not-null="false" unique="false" />
+        </property>
+        <property name="createDate" type="java.sql.Timestamp">
+            <column name="CreateDate" not-null="true" unique="false" />
+        </property>
+        <property name="expirationDate" type="java.sql.Timestamp">
+            <column name="ExpirationDate" not-null="false" unique="true" />
+        </property>
+        <property name="isPrivate" type="boolean">
+            <column name="IsPrivate" not-null="true" unique="false" />
+        </property>
+                <property name="isAddressedToGroup" type="boolean">
+            <column name="IsAddressedToGroup" not-null="true" unique="false" />
+        </property>
+        <bag name="points" table="points"
+                inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Note_id" not-null="true" />
+            </key>
+            <one-to-many class="pl.edu.pw.mini.sozpw.dataaccess.models.Point" />
+        </bag>
+    </class>
+</hibernate-mapping>

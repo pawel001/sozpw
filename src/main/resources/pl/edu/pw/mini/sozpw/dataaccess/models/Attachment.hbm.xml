@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <class name="pl.edu.pw.mini.sozpw.dataaccess.models.Attachment" table="attachments" catalog="test">
+        <id name="attachmentId" type="java.lang.Integer">
+            <column name="idAttachments" />
+            <generator class="identity" />
+        </id>
+        <property name="filename" type="string">
+            <column name="Filename" length="255" not-null="true" unique="false" />
+        </property>
+        <property name="fileType" type="string">
+            <column name="FileType" length="255" not-null="true" unique="false" />
+        </property>
+        <property name="note_id" type="java.lang.Integer">
+            <column name="note_id" not-null="true" unique="false" />
+        </property>
+        <property name="fileSize" type="java.lang.Integer">
+            <column name="FileSize" not-null="true" unique="false" />
+        </property>
+        <property name="file" type="binary">
+            <column name="File" not-null="true" unique="false" />
+        </property>
+    </class>
+</hibernate-mapping>

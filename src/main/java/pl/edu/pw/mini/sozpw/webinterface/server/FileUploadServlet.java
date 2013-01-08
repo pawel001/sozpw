@@ -64,7 +64,7 @@ public class FileUploadServlet extends HttpServlet {
 						response.getWriter().flush();
 					}
 				}
-			} catch (FileUploadException | IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

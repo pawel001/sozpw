@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <class name="pl.edu.pw.mini.sozpw.dataaccess.models.Cathegory" table="cathegory" catalog="test">
+        <id name="cathegoryId" type="java.lang.Integer">
+            <column name="idCathegory" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="string">
+            <column name="Name" length="10" not-null="true" unique="false" />
+        </property>
+    </class>
+</hibernate-mapping>

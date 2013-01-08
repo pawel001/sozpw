@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+    <class name="pl.edu.pw.mini.sozpw.dataaccess.models.User" table="users" catalog="test">
+        <id name="idUsers" type="java.lang.Integer">
+            <column name="idUsers" />
+            <generator class="identity" />
+        </id>
+        <property name="username" type="string">
+            <column name="Username" length="100" not-null="true" unique="false" />
+        </property>
+        <property name="email" type="string">
+            <column name="Email" length="100" not-null="true" unique="false" />
+        </property>
+        <property name="salt" type="string">
+            <column name="Salt" length="255" not-null="true" unique="false" />
+        </property>
+        <property name="phone" type="string">
+            <column name="Phone" length="100" not-null="false" unique="false" />
+        </property>
+        <property name="createDate" type="java.sql.Timestamp">
+            <column name="CreateDate" not-null="true" unique="false" />
+        </property>
+        <property name="lastLoginDate" type="java.sql.Timestamp">
+            <column name="LastLoginDate" not-null="true" unique="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="Password" length="255" not-null="true" unique="false" />
+        </property>
+        <property name="isActive" type="boolean">
+            <column name="IsActive" not-null="true" unique="false" />
+        </property>
+    </class>
+</hibernate-mapping>

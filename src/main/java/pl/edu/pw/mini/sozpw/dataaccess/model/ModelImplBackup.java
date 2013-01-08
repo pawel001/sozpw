@@ -1,105 +1,42 @@
 package pl.edu.pw.mini.sozpw.dataaccess.model;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import org.hibernate.Query;
-import org.hibernate.Session;
-
-import pl.edu.pw.mini.sozpw.dataaccess.persistence.HibernateUtil;
 
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Category;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Comment;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Note;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.User;
 
-public class ModelImpl implements Model {
+public class ModelImplBackup implements Model {
 
 	private static final String DEFAULT_KEY = "defaultKey";
 	private static int noteId = 1;
 
 	@Override
 	public User loginUser(String username, String pass) {
-		try {
-			System.out.println("Czy tutaj");
-			Session session = HibernateUtil.getSessionFactory().openSession();
-			session.beginTransaction();
 
-			Query query = session.createQuery("from User where username = :username");
-			query.setParameter("username", username);
-
-			@SuppressWarnings("rawtypes")
-			List result = query.list();
-			pl.edu.pw.mini.sozpw.dataaccess.models.User user;
-			try {
-				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
-			}
-			catch (Exception e) {
-				return null;
-			}
-			if(user != null && user.getPassword().equals(pass) && user.getIsActive() )	
-			{
-				User ret = new User();
-				ret.setUsername(username);
-				return ret;
-			}
-		//TODO zmiana last login date u usera
-		//if (pass.equals("123")) {
-		//	User ret = new User();
-		//	ret.setUsername(username);
-		//	return ret;
-		//}
+		if (pass.equals("123")) {
+			User ret = new User();
+			ret.setUsername(username);
+			return ret;
 		}
-		catch (Exception e ) {return null;};
 
 		return null;
 	}
 
 	@Override
 	public String registerUser(String username, String pass, String mail) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-
-		// najpierw sprawdzam czy user istnieje, jak nie to go tworzę
-		Query query = session
-				.createQuery("from User where username = :username");
-		query.setParameter("username", username);
-
-		@SuppressWarnings("rawtypes")
-		List result = query.list();
-		pl.edu.pw.mini.sozpw.dataaccess.models.User user;
-		try {
-			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
-		} catch (Exception e) {
-			return null;
-		}
-
 		if (username.equals("123")) {
 			return null;
 		}
-		if (user != null)
-			return null;
-
-		pl.edu.pw.mini.sozpw.dataaccess.models.User newUser = new pl.edu.pw.mini.sozpw.dataaccess.models.User();
-		java.util.Date date = new java.util.Date();
-		newUser.setCreateDate(new Timestamp(date.getTime()));
-		newUser.setEmail(mail);
-		newUser.setIsActive(false);
-		newUser.setPassword(pass);
-		newUser.setPhone("");
-		newUser.setSalt("");
-		newUser.setUsername(username);
-		newUser.setLastLoginDate(new Timestamp(date.getTime()));
 		return DEFAULT_KEY;
 	}
 
 	@Override
 	public boolean confirmRegistration(String key) {
-		// @PAWEL: tu nie zmieniam bo ja potrzebuje powiazania tego klucza z
-		// userem
 		return key.equals(DEFAULT_KEY);
 	}
 
