@@ -10,6 +10,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import pl.edu.pw.mini.sozpw.dataaccess.persistence.HibernateUtil;
+import pl.edu.pw.mini.sozpw.dataaccess.services.ModelToViewModelConverter;
+import pl.edu.pw.mini.sozpw.dataaccess.services.RandomStringGenerator;
 
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Category;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Comment;
@@ -28,32 +30,35 @@ public class ModelImpl implements Model {
 			Session session = HibernateUtil.getSessionFactory().openSession();
 			session.beginTransaction();
 
-			Query query = session.createQuery("from User where username = :username");
+			Query query = session
+					.createQuery("from User where username = :username");
 			query.setParameter("username", username);
 
 			@SuppressWarnings("rawtypes")
 			List result = query.list();
 			pl.edu.pw.mini.sozpw.dataaccess.models.User user;
 			try {
-				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
-			}
-			catch (Exception e) {
+				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result
+						.get(0);
+			} catch (Exception e) {
 				return null;
 			}
-			if(user != null && user.getPassword().equals(pass) && user.getIsActive() )	
-			{
+			if (user != null && user.getPassword().equals(pass)
+					&& user.getIsActive()) {
 				User ret = new User();
 				ret.setUsername(username);
 				return ret;
 			}
-		//TODO zmiana last login date u usera
-		//if (pass.equals("123")) {
-		//	User ret = new User();
-		//	ret.setUsername(username);
-		//	return ret;
-		//}
+			// TODO zmiana last login date u usera
+			// if (pass.equals("123")) {
+			// User ret = new User();
+			// ret.setUsername(username);
+			// return ret;
+			// }
+		} catch (Exception e) {
+			return null;
 		}
-		catch (Exception e ) {return null;};
+		;
 
 		return null;
 	}
@@ -90,102 +95,228 @@ public class ModelImpl implements Model {
 		newUser.setIsActive(false);
 		newUser.setPassword(pass);
 		newUser.setPhone("");
-		newUser.setSalt("");
+		
 		newUser.setUsername(username);
 		newUser.setLastLoginDate(new Timestamp(date.getTime()));
-		return DEFAULT_KEY;
+		String key = RandomStringGenerator.randomString(30);
+		newUser.setSalt(key);
+		return key;
 	}
 
 	@Override
 	public boolean confirmRegistration(String key) {
-		// @PAWEL: tu nie zmieniam bo ja potrzebuje powiazania tego klucza z
+		// TODO @PAWEL: tu nie zmieniam bo ja potrzebuje powiazania tego klucza z
 		// userem
-		return key.equals(DEFAULT_KEY);
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		// wyszukuje usera powiazanego z notatka
+		Query query = session
+				.createQuery("from User where salt = :salt");
+		query.setParameter("salt", key);
+
+		@SuppressWarnings("rawtypes")
+		List result = query.list();
+		pl.edu.pw.mini.sozpw.dataaccess.models.User user;
+		try {
+			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
+		} catch (Exception e) {
+			return false;
+		}
+		user.setIsActive(true);
+		user.setSalt("");
+		session.save(user);
+		return true;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Note> getNotes(String user) {
-		if (user.equals("Jacek")) {
-			ArrayList<Note> notes = new ArrayList<Note>();
-			Note sampleNote1 = new Note();
-			sampleNote1.setId(noteId++);
-			sampleNote1.setTopic("Pizza wieczorem");
-			sampleNote1
-					.setContent("Cześć, szukam osoby, która jest chętna pójść ze mną na pizzę wieczorem, najlepiej po 20. Lokalizacja dowolna. Mój tel: 600-123-123.");
-			sampleNote1.setUsername("Jacek");
-			sampleNote1.setLatitude(52.247280);
-			sampleNote1.setLongitude(21.013540);
-			sampleNote1.setCategory(Category.SPOTKANIE);
-			sampleNote1.setCreateDate(new Date().getTime() - 14 * 60 * 1000);
-			sampleNote1.setExpiryDate(new Date().getTime() + 20 * 60 * 60
-					* 1000);
+	public List<Note> getNotes(String username) {
+		List<Note> noteResults =  new ArrayList<Note>();
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		// wyszukuje usera powiazanego z komentarzem
+		Query query = session
+				.createQuery("from User where username = :username");
+		query.setParameter("username", username);
 
-			Comment comment1 = new Comment();
-			comment1.setComment("Ja chętnie się wybiorę!");
-			comment1.setDate(new Date().getTime() - 7 * 60 * 1000);
-			comment1.setUsername("Małgosia");
-
-			sampleNote1.getComments().add(comment1);
-			notes.add(sampleNote1);
-
-			Note sampleNote2 = new Note();
-			sampleNote2.setId(noteId++);
-			sampleNote2.setTopic("Konkurs! Super nagrody do wygrania.");
-			sampleNote2
-					.setContent("Kawiarnia \"Pyszna Kawa\" ogłasza konkurs na najlepszy slogan reklamowy. Szczegóły w lokalu oraz na załączonym plakacie.");
-			sampleNote2.setUsername("PysznaKawa");
-			sampleNote2.setLatitude(52.19823);
-			sampleNote2.setLongitude(21.010868);
-			sampleNote2.setCategory(Category.OGLOSZENIE);
-			sampleNote2.setCreateDate(new Date().getTime() - 7 * 24 * 60 * 60
-					* 1000);
-			sampleNote2.setExpiryDate(new Date().getTime() + 7 * 24 * 60 * 60
-					* 1000);
-			sampleNote2.setFilename("plakat.jpg");
-			notes.add(sampleNote2);
-
-			Note sampleNote3 = new Note();
-			sampleNote3.setId(noteId++);
-			sampleNote3.setTopic("Zobacz wystawę.");
-			sampleNote3
-					.setContent("Jak będziesz przechodził to zwróć uwagę na na wystawę w sklepie meblowym. Spodobała mi się ta kanapa.");
-			sampleNote3.setUsername("Dominika");
-			sampleNote3.setLatitude(52.23738);
-			sampleNote3.setLongitude(20.957492);
-			sampleNote3.setCategory(Category.BRAK_KATEGORII);
-			sampleNote3.setCreateDate(new Date().getTime() - 3 * 24 * 60 * 60
-					* 1000);
-			sampleNote3.getDedicationList().add("Jacek");
-			notes.add(sampleNote3);
-
-			return notes;
+		@SuppressWarnings("rawtypes")
+		List result = query.list();
+		pl.edu.pw.mini.sozpw.dataaccess.models.User user;
+		try {
+			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
+		} catch (Exception e) {
+			return new ArrayList<Note>();
 		}
-		return new ArrayList<Note>();
+		
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1 = (List) session.createQuery("from Note where user_id = " + user.getIdUsers());
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2 = (List) session.createQuery("from Note where addressedUser_id = " + user.getIdUsers());
+		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results1) {
+			Query queryForUsername = session
+					.createQuery("from User where username = :username");
+			queryForUsername.setParameter("username", username);
+
+			@SuppressWarnings("rawtypes")
+			List resultForUsername = queryForUsername.list();
+			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
+			try {
+				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername .get(0);
+			} catch (Exception e) {
+				return new ArrayList<Note>();
+			}
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
+			noteResults.add(noteViewModel);
+		}
+		
+		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results2) {
+			Query queryForUsername = session
+					.createQuery("from User where username = :username");
+			queryForUsername.setParameter("username", username);
+
+			@SuppressWarnings("rawtypes")
+			List resultForUsername = queryForUsername.list();
+			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
+			try {
+				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername .get(0);
+			} catch (Exception e) {
+				return new ArrayList<Note>();
+			}
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
+			noteResults.add(noteViewModel);
+		}
+		
+		return noteResults;
 	}
 
 	@Override
 	public Integer addNote(Note note, byte[] attachment) {
-		if (attachment != null) {
-			System.out.println(attachment.length);
+		try {
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			// wyszukuje usera powiazanego z notatka
+			Query query = session
+					.createQuery("from User where username = :username");
+			query.setParameter("username", note.getUsername());
+
+			@SuppressWarnings("rawtypes")
+			List result = query.list();
+			pl.edu.pw.mini.sozpw.dataaccess.models.User user;
+			try {
+				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
+			} catch (Exception e) {
+				return -1;
+			}
+			//TODO dodać kod do wyciągania z dedication list
+			//TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie danych
+			pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter.toDbNote(note, -1, false, -1, 1, user.getIdUsers());
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel.getPoints();
+			noteModel.setPoints(null);
+			session.save(noteModel);
+			for(pl.edu.pw.mini.sozpw.dataaccess.models.Point p : backup)
+			{
+				p.setNote(noteModel);
+				session.save(p);
+			}
+			if(attachment != null)
+			{
+				pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachmentModel = new pl.edu.pw.mini.sozpw.dataaccess.models.Attachment();
+				attachmentModel.setFile(attachment);
+				attachmentModel.setFilename(note.getFilename());
+				attachmentModel.setFileSize(attachment.length);
+				//attachmentModel.setFileType(fileInfo.getType());
+				attachmentModel.setNote_id(noteModel.getNoteId());
+				session.save(attachmentModel);
+			}
+			session.getTransaction().commit();
+			return noteModel.getNoteId();
 		}
-		return noteId++;
+		catch (Exception e) {System.out.println(e.getMessage());}
+		return -1;
 	}
 
 	@Override
 	public boolean editNote(Note note, byte[] attachment) {
-		if (attachment != null) {
-			System.out.println(attachment.length);
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		// wyszukuje usera powiazanego z notatka
+		Query query = session
+				.createQuery("from User where username = :username");
+		query.setParameter("username", note.getUsername());
+
+		@SuppressWarnings("rawtypes")
+		List result = query.list();
+		pl.edu.pw.mini.sozpw.dataaccess.models.User user;
+		try {
+			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
+		} catch (Exception e) {
+			return false;
 		}
+		//TODO dodać kod do wyciągania z dedication list
+		//TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie danych
+		
+		//TODO NARAZIE ZROBIONE POPRZEZ USUWANIE I DODAWANIE POTEM ZMIENIĆ
+		//Note model = (Note) session.get(Note.class, note.getId());
+		deleteNote(note.getId());
+		//KONIEC USUWANIA
+		
+		pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter.toDbNote(note,-1, false, -1, 1, user.getIdUsers());
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel.getPoints();
+		noteModel.setPoints(null);
+		session.save(noteModel);
+		for(pl.edu.pw.mini.sozpw.dataaccess.models.Point p : backup)
+		{
+			p.setNote(noteModel);
+			session.save(p);
+		}
+		if(attachment != null)
+		{
+			pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachmentModel = new pl.edu.pw.mini.sozpw.dataaccess.models.Attachment();
+			attachmentModel.setFile(attachment);
+			attachmentModel.setFilename(note.getFilename());
+			attachmentModel.setFileSize(attachment.length);
+			//attachmentModel.setFileType(fileInfo.getType());
+			attachmentModel.setNote_id(noteModel.getNoteId());
+			session.save(attachmentModel);
+		}
+		session.getTransaction().commit();
 		return true;
 	}
 
 	@Override
 	public boolean deleteNote(Integer noteId) {
-		return true;
+		try {
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			Note model = (Note) session.get(Note.class, noteId);
+			session.delete(model);
+			// TODO usunąć punkty??? kaskada?
+			session.getTransaction().commit();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean addComment(int noteId, Comment comment) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		// wyszukuje usera powiazanego z komentarzem
+		Query query = session
+				.createQuery("from User where username = :username");
+		query.setParameter("username", comment.getUsername());
+
+		@SuppressWarnings("rawtypes")
+		List result = query.list();
+		pl.edu.pw.mini.sozpw.dataaccess.models.User user;
+		try {
+			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
+		} catch (Exception e) {
+			return false;
+		}
+		pl.edu.pw.mini.sozpw.dataaccess.models.Comment commentModel = ModelToViewModelConverter.toDbComment(comment, user.getIdUsers(), noteId);
+		session.save(commentModel);
+		session.getTransaction().commit();
 		return true;
 	}
 

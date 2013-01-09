@@ -31,5 +31,4 @@ public class Comment implements IsSerializable{
 	public void setDate(long date) {
 		this.date = date;
 	}
-
 }

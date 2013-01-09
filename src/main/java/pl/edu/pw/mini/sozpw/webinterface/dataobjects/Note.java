@@ -1,5 +1,6 @@
 package pl.edu.pw.mini.sozpw.webinterface.dataobjects;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
