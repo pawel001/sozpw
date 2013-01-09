@@ -108,7 +108,7 @@ public class AddNoteDialog extends AddNoteDialogGenerated {
 
 	public native void setTokenInput() /*-{
 		scriptaddress = $wnd.location.protocol + "//" + $wnd.location.host
-				+ "/dedicationQuery";
+				+ "/dedicationQuery?type=all";
 		$wnd.$("#inputTextBox").tokenInput(scriptaddress, {
 			theme : "facebook",
 			hintText : "Wpisz nazwę użytkownika lub grupy",

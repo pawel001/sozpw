@@ -95,7 +95,7 @@ public class ModelImpl implements Model {
 		newUser.setIsActive(false);
 		newUser.setPassword(pass);
 		newUser.setPhone("");
-		
+
 		newUser.setUsername(username);
 		newUser.setLastLoginDate(new Timestamp(date.getTime()));
 		String key = RandomStringGenerator.randomString(30);
@@ -105,13 +105,13 @@ public class ModelImpl implements Model {
 
 	@Override
 	public boolean confirmRegistration(String key) {
-		// TODO @PAWEL: tu nie zmieniam bo ja potrzebuje powiazania tego klucza z
+		// TODO @PAWEL: tu nie zmieniam bo ja potrzebuje powiazania tego klucza
+		// z
 		// userem
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		// wyszukuje usera powiazanego z notatka
-		Query query = session
-				.createQuery("from User where salt = :salt");
+		Query query = session.createQuery("from User where salt = :salt");
 		query.setParameter("salt", key);
 
 		@SuppressWarnings("rawtypes")
@@ -131,8 +131,8 @@ public class ModelImpl implements Model {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<Note> getNotes(String username) {
-		List<Note> noteResults =  new ArrayList<Note>();
-		
+		List<Note> noteResults = new ArrayList<Note>();
+
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		// wyszukuje usera powiazanego z komentarzem
@@ -147,11 +147,15 @@ public class ModelImpl implements Model {
 			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
 		} catch (Exception e) {
 			return new ArrayList<Note>();
+
 		}
-		
-		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1 = (List) session.createQuery("from Note where user_id = " + user.getIdUsers());
-		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2 = (List) session.createQuery("from Note where addressedUser_id = " + user.getIdUsers());
-		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results1) {
+
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1 = (List) session
+				.createQuery("from Note where user_id = " + user.getIdUsers());
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2 = (List) session
+				.createQuery("from Note where addressedUser_id = "
+						+ user.getIdUsers());
+		for (pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results1) {
 			Query queryForUsername = session
 					.createQuery("from User where username = :username");
 			queryForUsername.setParameter("username", username);
@@ -160,15 +164,17 @@ public class ModelImpl implements Model {
 			List resultForUsername = queryForUsername.list();
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
 			try {
-				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername .get(0);
+				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername
+						.get(0);
 			} catch (Exception e) {
 				return new ArrayList<Note>();
 			}
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n,
+					userForUsername.getUsername(), new ArrayList<String>());
 			noteResults.add(noteViewModel);
 		}
-		
-		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results2) {
+
+		for (pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results2) {
 			Query queryForUsername = session
 					.createQuery("from User where username = :username");
 			queryForUsername.setParameter("username", username);
@@ -177,14 +183,16 @@ public class ModelImpl implements Model {
 			List resultForUsername = queryForUsername.list();
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
 			try {
-				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername .get(0);
+				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername
+						.get(0);
 			} catch (Exception e) {
 				return new ArrayList<Note>();
 			}
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n,
+					userForUsername.getUsername(), new ArrayList<String>());
 			noteResults.add(noteViewModel);
 		}
-		
+
 		return noteResults;
 	}
 
@@ -202,35 +210,38 @@ public class ModelImpl implements Model {
 			List result = query.list();
 			pl.edu.pw.mini.sozpw.dataaccess.models.User user;
 			try {
-				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
+				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result
+						.get(0);
 			} catch (Exception e) {
 				return -1;
 			}
-			//TODO dodać kod do wyciągania z dedication list
-			//TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie danych
-			pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter.toDbNote(note, -1, false, -1, 1, user.getIdUsers());
-			List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel.getPoints();
+			// TODO dodać kod do wyciągania z dedication list
+			// TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie
+			// danych
+			pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter
+					.toDbNote(note, -1, false, -1, 1, user.getIdUsers());
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel
+					.getPoints();
 			noteModel.setPoints(null);
 			session.save(noteModel);
-			for(pl.edu.pw.mini.sozpw.dataaccess.models.Point p : backup)
-			{
+			for (pl.edu.pw.mini.sozpw.dataaccess.models.Point p : backup) {
 				p.setNote(noteModel);
 				session.save(p);
 			}
-			if(attachment != null)
-			{
+			if (attachment != null) {
 				pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachmentModel = new pl.edu.pw.mini.sozpw.dataaccess.models.Attachment();
 				attachmentModel.setFile(attachment);
 				attachmentModel.setFilename(note.getFilename());
 				attachmentModel.setFileSize(attachment.length);
-				//attachmentModel.setFileType(fileInfo.getType());
+				// attachmentModel.setFileType(fileInfo.getType());
 				attachmentModel.setNote_id(noteModel.getNoteId());
 				session.save(attachmentModel);
 			}
 			session.getTransaction().commit();
 			return noteModel.getNoteId();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
-		catch (Exception e) {System.out.println(e.getMessage());}
 		return -1;
 	}
 
@@ -251,30 +262,30 @@ public class ModelImpl implements Model {
 		} catch (Exception e) {
 			return false;
 		}
-		//TODO dodać kod do wyciągania z dedication list
-		//TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie danych
-		
-		//TODO NARAZIE ZROBIONE POPRZEZ USUWANIE I DODAWANIE POTEM ZMIENIĆ
-		//Note model = (Note) session.get(Note.class, note.getId());
+		// TODO dodać kod do wyciągania z dedication list
+		// TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie danych
+
+		// TODO NARAZIE ZROBIONE POPRZEZ USUWANIE I DODAWANIE POTEM ZMIENIĆ
+		// Note model = (Note) session.get(Note.class, note.getId());
 		deleteNote(note.getId());
-		//KONIEC USUWANIA
-		
-		pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter.toDbNote(note,-1, false, -1, 1, user.getIdUsers());
-		List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel.getPoints();
+		// KONIEC USUWANIA
+
+		pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter
+				.toDbNote(note, -1, false, -1, 1, user.getIdUsers());
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel
+				.getPoints();
 		noteModel.setPoints(null);
 		session.save(noteModel);
-		for(pl.edu.pw.mini.sozpw.dataaccess.models.Point p : backup)
-		{
+		for (pl.edu.pw.mini.sozpw.dataaccess.models.Point p : backup) {
 			p.setNote(noteModel);
 			session.save(p);
 		}
-		if(attachment != null)
-		{
+		if (attachment != null) {
 			pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachmentModel = new pl.edu.pw.mini.sozpw.dataaccess.models.Attachment();
 			attachmentModel.setFile(attachment);
 			attachmentModel.setFilename(note.getFilename());
 			attachmentModel.setFileSize(attachment.length);
-			//attachmentModel.setFileType(fileInfo.getType());
+			// attachmentModel.setFileType(fileInfo.getType());
 			attachmentModel.setNote_id(noteModel.getNoteId());
 			session.save(attachmentModel);
 		}
@@ -314,7 +325,8 @@ public class ModelImpl implements Model {
 		} catch (Exception e) {
 			return false;
 		}
-		pl.edu.pw.mini.sozpw.dataaccess.models.Comment commentModel = ModelToViewModelConverter.toDbComment(comment, user.getIdUsers(), noteId);
+		pl.edu.pw.mini.sozpw.dataaccess.models.Comment commentModel = ModelToViewModelConverter
+				.toDbComment(comment, user.getIdUsers(), noteId);
 		session.save(commentModel);
 		session.getTransaction().commit();
 		return true;
@@ -355,7 +367,7 @@ public class ModelImpl implements Model {
 				"Bailey", "Wyatt", "Isabel", "Dominic", "Arianna", "Antonio",
 				"Sierra", "Jaden", "Mariah", "Miguel", "Aaliyah", "Brayden",
 				"Melanie", "Patrick", "Erin", "Alejandro", "Nevaeh", "Carson",
-				"Brooklyn", "Jesse", "Marissa");
+				"Brooklyn", "Jesse", "Marissa", "Pawel");
 
 		List<String> res = new ArrayList<String>();
 		for (String name : names) {
@@ -367,6 +379,60 @@ public class ModelImpl implements Model {
 			}
 		}
 		return res;
+	}
+
+	@Override
+	public List<String> getUserGropus(String user) {
+		List<String> res = new ArrayList<String>();
+
+		if (user.equals("Pawel")) {
+			res.add("GrupaW1");
+			res.add("Warszawa");
+		}
+
+		return res;
+	}
+
+	@Override
+	public boolean addGroup(String user, String groupName) {
+		return true;
+	}
+
+	@Override
+	public void removeGroup(String gropuName) {
+		return;
+	}
+
+	@Override
+	public void assignUserToGroups(String username, List<String> groups) {
+		return;
+	}
+
+	@Override
+	public List<String> getGroupsHints(String query, int count) {
+		List<String> names = Arrays.asList("GrupaW1", "Warszawa", "Riviera",
+				"MiNI", "Politechnika");
+
+		List<String> res = new ArrayList<String>();
+		for (String name : names) {
+			if (name.toLowerCase().startsWith(query.toLowerCase())) {
+				res.add(name);
+				if (res.size() == count) {
+					break;
+				}
+			}
+		}
+		return res;
+	}
+
+	@Override
+	public boolean changePassword(String oldPass, String newPass) {
+		return true;
+	}
+
+	@Override
+	public byte[] getAttachment(int noteId) {
+		return null;
 	}
 
 }

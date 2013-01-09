@@ -23,10 +23,13 @@ public class HistoryManager implements ValueChangeHandler<String> {
 			mainUI.getMainHyperlink().setStyleName("gwt-HyperlinkCustomCurrent");
 		} else if (historyToken.equals("groups")) {
 			mainUI.getContentPanel().clear();
+			mainUI.getContentPanel().add(mainUI.getGroupPage());
+			mainUI.getGroupPage().initFields();
 			
 			mainUI.getGroupsHyperlink().setStyleName("gwt-HyperlinkCustomCurrent");
 		} else if (historyToken.equals("settings")) {
 			mainUI.getContentPanel().clear();
+			mainUI.getContentPanel().add(mainUI.getSettingsPage());
 			
 			mainUI.getSettingsHyperlink().setStyleName("gwt-HyperlinkCustomCurrent");
 		}

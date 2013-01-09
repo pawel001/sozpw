@@ -12,4 +12,7 @@ public interface LoginServiceAsync {
 
 	void register(String username, String pass, String mail, AsyncCallback<Boolean> callback);
 
+	void changePassword(String oldPass, String newPass,
+			AsyncCallback<Boolean> callback);
+
 }

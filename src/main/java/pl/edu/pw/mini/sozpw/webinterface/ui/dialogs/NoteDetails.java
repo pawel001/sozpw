@@ -35,8 +35,9 @@ public class NoteDetails extends NoteDetailsGenerated {
 		getDedicationTextBox().setValue(dedication);
 		
 		Anchor attachentLink = new Anchor();
+		attachentLink.setTarget("_blank");
 		attachentLink.setText(note.getFilename());
-		attachentLink.setHref(GWT.getModuleBaseURL() + "attachmentService?noteId=" + note.getId());
+		attachentLink.setHref(GWT.getHostPageBaseURL() + "attachmentservice?noteId=" + note.getId() + "&filename=" + note.getFilename());
 		getAttachmentDiv().add(attachentLink);
 
 		getOkButton().addClickHandler(new ClickHandler() {

@@ -62,4 +62,9 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 		request.getSession().invalidate();
 	}
 
+	@Override
+	public boolean changePassword(String oldPass, String newPass) {
+		return model.changePassword(oldPass, newPass);
+	}
+
 }

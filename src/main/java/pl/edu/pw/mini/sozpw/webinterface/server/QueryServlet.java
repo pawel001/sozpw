@@ -22,7 +22,12 @@ public class QueryServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 
 		response.setContentType("text/html;charset=UTF-8");
-		List<String> names = model.getDedicationHints(request.getParameter("q"), MAX_HINTS);
+		List<String> names;
+		if(request.getParameter("type").equals("all")){
+			names= model.getDedicationHints(request.getParameter("q"), MAX_HINTS);
+		}else{
+			names = model.getGroupsHints(request.getParameter("q"), MAX_HINTS);
+		}
 
 		try {
 			PrintWriter out = response.getWriter();

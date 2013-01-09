@@ -4,7 +4,7 @@ import pl.edu.pw.mini.sozpw.webinterface.services.LoginService;
 import pl.edu.pw.mini.sozpw.webinterface.services.LoginServiceAsync;
 import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.RegisterDialog;
 import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.StyledDialogBox;
-import pl.edu.pw.mini.sozpw.webinterface.utils.RegisterValidation;
+import pl.edu.pw.mini.sozpw.webinterface.utils.Validator;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -86,17 +86,17 @@ public class LoginUI extends LoginUIGenerated {
 		String passConf = getRegisterPassConf().getText();
 		String mail = getRegisterMail().getText();
 
-		if (!RegisterValidation.verifyUsername(username)) {
+		if (!Validator.verifyName(username)) {
 			getRegisterLabel().setText("Niepoprawna nazwa użytkownika");
 			return;
 		}
 
-		if (!RegisterValidation.verifyPass(pass, passConf)) {
+		if (!Validator.verifyPass(pass, passConf)) {
 			getRegisterLabel().setText("Niepoprawne/Niezgodne hasła");
 			return;
 		}
 
-		if (!RegisterValidation.verifyMail(mail)) {
+		if (!Validator.verifyMail(mail)) {
 			getRegisterLabel().setText("Niepoprawny adres email");
 			return;
 		}
