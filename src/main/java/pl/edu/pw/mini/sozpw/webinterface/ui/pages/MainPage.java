@@ -5,12 +5,16 @@ import java.util.List;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Note;
 import pl.edu.pw.mini.sozpw.webinterface.services.NoteService;
 import pl.edu.pw.mini.sozpw.webinterface.services.NoteServiceAsync;
+import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.FilterDialog;
+import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.StyledDialogBox;
 import pl.edu.pw.mini.sozpw.webinterface.ui.elements.CommentWidget;
 import pl.edu.pw.mini.sozpw.webinterface.ui.elements.NoteWidget;
 import pl.edu.pw.mini.sozpw.webinterface.ui.handlers.MapClickHandler;
 import pl.edu.pw.mini.sozpw.webinterface.utils.Geolocalizator;
+import pl.edu.pw.mini.sozpw.webinterface.utils.NoteFilter;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -31,10 +35,29 @@ public class MainPage extends MainPageGenerated {
 	private GoogleMap map;
 	private String username;
 	private NoteServiceAsync noteService;
+	private NoteFilter noteFilter;
 
 	public MainPage(String username) {
 		this.username = username;
+		this.noteFilter = new NoteFilter();
 		initMap();
+		initTimer();
+		
+		getFiltersButton().addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				StyledDialogBox sdb = new StyledDialogBox("Filtruj wiadomości");
+				FilterDialog fd = new FilterDialog(MainPage.this, sdb, MainPage.this.noteFilter);
+				sdb.add(fd);
+				sdb.center();
+				fd.setTokenInput();
+				fd.initDedications(MainPage.this.noteFilter);
+			}
+		});
+	}
+	
+	private void initTimer(){
 		(new Timer() {
 			@Override
 			public void run() {
@@ -60,13 +83,28 @@ public class MainPage extends MainPageGenerated {
 		map = GoogleMap.create(getMapPanel().getElement(), myOptions);
 		map.addClickListener(new MapClickHandler(this));
 		Geolocalizator.setToCurrentLatLng(map);
-
+		
+		initNotes();
+		
+	}
+	
+	public void initNotes(){
+		
+		for (int i = 0; i < getNotesPanel().getWidgetCount(); i++) {
+			NoteWidget nw = (NoteWidget) getNotesPanel().getWidget(i);
+			nw.getMarker().setMap((GoogleMap) null);
+		}
+		
+		getNotesPanel().clear();
+		
 		noteService.getNotes(username, new AsyncCallback<List<Note>>() {
 
 			@Override
 			public void onSuccess(List<Note> result) {
 				for (Note note : result) {
-					MainPage.this.addNoteToPanel(note);
+					if(MainPage.this.noteFilter.pass(note)){
+						MainPage.this.addNoteToPanel(note);
+					}	
 				}
 			}
 
@@ -226,6 +264,14 @@ public class MainPage extends MainPageGenerated {
 
 	public String getUsername() {
 		return username;
+	}
+
+	public NoteFilter getNoteFilter() {
+		return noteFilter;
+	}
+
+	public void setNoteFilter(NoteFilter noteFilter) {
+		this.noteFilter = noteFilter;
 	}
 
 }

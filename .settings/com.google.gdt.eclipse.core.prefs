@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
-lastWarOutDir=D\:/Programming/deploy.v1/sozpw/target/sozpw-1.0
+jarsExcludedFromWebInfLib=
+lastWarOutDir=D\:/Programming/inz/workingdirectory/target/sozpw-0.1
 warSrcDir=src/main/webapp
 warSrcDirIsOutput=false

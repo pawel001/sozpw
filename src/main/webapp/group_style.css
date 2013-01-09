@@ -1,0 +1,39 @@
+.gwt-GroupLabel {
+	font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+	font-size: 22px;
+	margin-top: 30px;
+	margin-bottom: 20px;
+	color: #1A1A1A;
+	text-align: left;
+}
+.gwt-insidePanel {
+	margin-top:70px;
+	margin-bottom:auto;
+	margin-right: auto;
+	margin-left: 150px;
+	display: inline-block;
+}
+.gwt-table {
+	margin-left: 0px;
+}
+.get-GroupwWidgetLabel {
+	font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+	font-size: 11px;
+	padding-left: 2px;
+}
+.gwt-deleteButton {
+	background: none;
+	background-image: url("images/delete.png");
+	border: none;
+}
+
+.gwt-deleteButton:HOVER {
+	background-image: url("images/delete2.png");
+	cursor: pointer;
+}
+.gwt-Widget {
+	background-color: #ffffff;
+	border:1px solid #ccd5e4;
+	margin-left: 3px;
+	margin-bottom: 1px;
+}

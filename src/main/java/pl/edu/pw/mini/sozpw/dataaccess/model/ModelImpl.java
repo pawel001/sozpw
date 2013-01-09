@@ -42,20 +42,21 @@ public class ModelImpl implements Model {
 
 	@Override
 	public List<Note> getNotes(String user) {
-		if (user.equals("Jacek")) {
+		if (user.equals("Pawel")) {
 			ArrayList<Note> notes = new ArrayList<Note>();
 			Note sampleNote1 = new Note();
 			sampleNote1.setId(noteId++);
 			sampleNote1.setTopic("Pizza wieczorem");
 			sampleNote1
 					.setContent("Cześć, szukam osoby, która jest chętna pójść ze mną na pizzę wieczorem, najlepiej po 20. Lokalizacja dowolna. Mój tel: 600-123-123.");
-			sampleNote1.setUsername("Jacek");
+			sampleNote1.setUsername("Pawel");
 			sampleNote1.setLatitude(52.247280);
 			sampleNote1.setLongitude(21.013540);
 			sampleNote1.setCategory(Category.SPOTKANIE);
 			sampleNote1.setCreateDate(new Date().getTime() - 14 * 60 * 1000);
 			sampleNote1.setExpiryDate(new Date().getTime() + 20 * 60 * 60
 					* 1000);
+			sampleNote1.setFilename("");
 
 			Comment comment1 = new Comment();
 			comment1.setComment("Ja chętnie się wybiorę!");
@@ -92,7 +93,7 @@ public class ModelImpl implements Model {
 			sampleNote3.setCategory(Category.BRAK_KATEGORII);
 			sampleNote3.setCreateDate(new Date().getTime() - 3 * 24 * 60 * 60
 					* 1000);
-			sampleNote3.getDedicationList().add("Jacek");
+			sampleNote3.getDedicationList().add("Pawel");
 			notes.add(sampleNote3);
 
 			return notes;
@@ -161,7 +162,7 @@ public class ModelImpl implements Model {
 				"Bailey", "Wyatt", "Isabel", "Dominic", "Arianna", "Antonio",
 				"Sierra", "Jaden", "Mariah", "Miguel", "Aaliyah", "Brayden",
 				"Melanie", "Patrick", "Erin", "Alejandro", "Nevaeh", "Carson",
-				"Brooklyn", "Jesse", "Marissa");
+				"Brooklyn", "Jesse", "Marissa", "Pawel");
 
 		List<String> res = new ArrayList<String>();
 		for (String name : names) {
@@ -173,6 +174,60 @@ public class ModelImpl implements Model {
 			}
 		}
 		return res;
+	}
+
+	@Override
+	public List<String> getUserGropus(String user) {
+		List<String> res = new ArrayList<String>();
+		
+		if (user.equals("Pawel")) {
+			res.add("GrupaW1");
+			res.add("Warszawa");
+		}
+
+		return res;
+	}
+
+	@Override
+	public boolean addGroup(String user, String groupName) {
+		return true;
+	}
+
+	@Override
+	public void removeGroup(String gropuName) {
+		return;
+	}
+
+	@Override
+	public void assignUserToGroups(String username, List<String> groups) {
+		return;
+	}
+
+	@Override
+	public List<String> getGroupsHints(String query, int count) {
+		List<String> names = Arrays.asList("GrupaW1", "Warszawa", "Riviera",
+				"MiNI", "Politechnika");
+
+		List<String> res = new ArrayList<String>();
+		for (String name : names) {
+			if (name.toLowerCase().startsWith(query.toLowerCase())) {
+				res.add(name);
+				if (res.size() == count) {
+					break;
+				}
+			}
+		}
+		return res;
+	}
+
+	@Override
+	public boolean changePassword(String oldPass, String newPass) {
+		return true;
+	}
+
+	@Override
+	public byte[] getAttachment(int noteId) {
+		return null;
 	}
 
 }

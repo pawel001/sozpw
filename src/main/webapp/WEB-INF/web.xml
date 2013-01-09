@@ -6,14 +6,6 @@
   version="3.0"
   metadata-complete="true">
 	<servlet>
-		<servlet-name>InfoService</servlet-name>
-		<servlet-class>pl.edu.pw.mini.sozpw.webinterface.server.InfoServiceImpl</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>InfoService</servlet-name>
-		<url-pattern>/coreview/infoservice</url-pattern>
-	</servlet-mapping>
-	<servlet>
 		<servlet-name>LoginService</servlet-name>
 		<servlet-class>pl.edu.pw.mini.sozpw.webinterface.server.LoginServiceImpl</servlet-class>
 	</servlet>
@@ -30,6 +22,14 @@
 		<url-pattern>/coreview/noteservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
+		<servlet-name>GroupService</servlet-name>
+		<servlet-class>pl.edu.pw.mini.sozpw.webinterface.server.GroupServiceImpl</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GroupService</servlet-name>
+		<url-pattern>/coreview/groupservice</url-pattern>
+	</servlet-mapping>
+	<servlet>
 		<servlet-name>RegistrationServlet</servlet-name>
 		<servlet-class>pl.edu.pw.mini.sozpw.webinterface.server.RegistrationServlet</servlet-class>
 	</servlet>
@@ -44,6 +44,14 @@
 	<servlet-mapping>
 		<servlet-name>FileUploadServlet</servlet-name>
 		<url-pattern>/FileUploadServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>AttachmentServlet</servlet-name>
+		<servlet-class>pl.edu.pw.mini.sozpw.webinterface.server.AttachmentServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AttachmentServlet</servlet-name>
+		<url-pattern>/attachmentservice</url-pattern>
 	</servlet-mapping>
 	<servlet>
 		<servlet-name>QueryServlet</servlet-name>

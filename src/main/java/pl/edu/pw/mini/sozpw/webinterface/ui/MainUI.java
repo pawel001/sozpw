@@ -2,7 +2,9 @@ package pl.edu.pw.mini.sozpw.webinterface.ui;
 
 import pl.edu.pw.mini.sozpw.webinterface.services.LoginService;
 import pl.edu.pw.mini.sozpw.webinterface.services.LoginServiceAsync;
+import pl.edu.pw.mini.sozpw.webinterface.ui.pages.GroupPage;
 import pl.edu.pw.mini.sozpw.webinterface.ui.pages.MainPage;
+import pl.edu.pw.mini.sozpw.webinterface.ui.pages.SettingsPage;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,14 +18,17 @@ public class MainUI extends MainUIGenerated {
 
 	LoginServiceAsync loginService;
 	MainPage mainPage;
+	String username;
 
 	public MainUI(String username) {
 
 		loginService = (LoginServiceAsync) GWT.create(LoginService.class);
 		mainPage = new MainPage(username);
+		this.username = username;
 
 		getUsernameLabel().setText(username);
 		getContentPanel().add(mainPage);
+		History.newItem("main");
 
 		getLogoutButton().addClickHandler(new ClickHandler() {
 
@@ -49,6 +54,14 @@ public class MainUI extends MainUIGenerated {
 
 	public MainPage getMainPage() {
 		return mainPage;
+	}
+
+	public GroupPage getGroupPage() {
+		return new GroupPage(username, mainPage);
+	}
+	
+	public SettingsPage getSettingsPage(){
+		return new SettingsPage(username);
 	}
 
 }
