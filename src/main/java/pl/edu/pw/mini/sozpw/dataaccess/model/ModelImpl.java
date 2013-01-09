@@ -146,9 +146,14 @@ public class ModelImpl implements Model {
 		System.out.println("Get notes: Pobrałem usera jego id to: " + user.getIdUsers());
 		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1;
 		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2;
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results3;
 		try {
 			results1 = (List) session.createQuery("from Note where user_id = " + user.getIdUsers()).list();
 			results2 = (List) session.createQuery("from Note where addressedUser_id = " + user.getIdUsers()).list();
+			results3 = (List) session.createQuery("from Note where user_id <> " + user.getIdUsers() 
+					+ " AND " + "addressedUser_id <> " + user.getIdUsers()
+					+ " AND " + "isPrivate = false" 
+					).list();
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -157,10 +162,12 @@ public class ModelImpl implements Model {
 		}
 		System.out.println("Lista1 jeden ma " + results1.size() + " elementów");
 		System.out.println("Lista2 jeden ma " + results2.size() + " elementów");
+		System.out.println("Lista3 jeden ma " + results2.size() + " elementów");
+		
+		//LISTA MOICH
 		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results1) {
-			//Query queryForUsername = session
-			//		.createQuery("from User where username = :username");
-			//queryForUsername.setParameter("idUsers", n.getUser_id());
+
+			//UZUPELNIAM STRINGA Z USERNAMEM
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
 			try {
 				userForUsername = 
@@ -169,22 +176,42 @@ public class ModelImpl implements Model {
 			}
 			catch (Exception e) { continue;}
 			if(userForUsername == null) continue;
-			//List resultForUsername = queryForUsername.list();
-			//pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
-			//try {
-			//	userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername.get(0);
-			//} catch (Exception e) {
-			//	continue;
-			//}
+
+			//UZUPELNIAM KOMENTARZE
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Comment> commentsDb = (List) session.createQuery("from Comment where note_id = " + n.getNoteId()).list();
+			ArrayList<Comment> commentsToAdd = new ArrayList<Comment>();
+			for(pl.edu.pw.mini.sozpw.dataaccess.models.Comment c : commentsDb) {
+				//UZUPELNIAM USERNAME DLA KOMENTARZA
+				pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsernameComment;
+				try {
+					userForUsernameComment = 
+							(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+							session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
+				}
+				catch (Exception e) { continue;}
+				if(userForUsernameComment == null) continue;
+				Comment commentToAdd = ModelToViewModelConverter.toViewModelComment(c, userForUsernameComment.getUsername());
+				commentsToAdd.add(commentToAdd);
+			}
+			//UZUPELNIAM INFORMACJE O ADRESOWANYM USERZE
+			ArrayList<String> dedicationList = new ArrayList<String>();
+			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsernameAddressed;
+			try {
+				userForUsernameAddressed = 
+						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getAddressedUser_id());
+				dedicationList.add(userForUsernameAddressed.getUsername());
+			}
+			//NIC NIE ROBIE BO TO MOŻE NIE BYĆ ADRESOWANE
+			catch (Exception e) { ;}
 			
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd);
 			noteResults.add(noteViewModel);
 		}
 		
+		//LISTA ADRESOWANYCH DO MNIE
 		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results2) {
-			//Query queryForUsername = session
-			//		.createQuery("from User where username = :username");
-			//queryForUsername.setParameter("idUsers", n.getUser_id());
+			//UZUPELNIAM STRINGA Z USERNAMEM
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
 			try {
 				userForUsername = 
@@ -193,15 +220,82 @@ public class ModelImpl implements Model {
 			}
 			catch (Exception e) { continue;}
 			if(userForUsername == null) continue;
-			//List resultForUsername = queryForUsername.list();
-			//pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
-			//try {
-			//	userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername.get(0);
-			//} catch (Exception e) {
-			//	continue;
-			//}
+
+			//UZUPELNIAM KOMENTARZE
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Comment> commentsDb = (List) session.createQuery("from Comment where note_id = " + n.getNoteId()).list();
+			ArrayList<Comment> commentsToAdd = new ArrayList<Comment>();
+			for(pl.edu.pw.mini.sozpw.dataaccess.models.Comment c : commentsDb) {
+				//UZUPELNIAM USERNAME DLA KOMENTARZA
+				pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsernameComment;
+				try {
+					userForUsernameComment = 
+							(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+							session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
+				}
+				catch (Exception e) { continue;}
+				if(userForUsernameComment == null) continue;
+				Comment commentToAdd = ModelToViewModelConverter.toViewModelComment(c, userForUsernameComment.getUsername());
+				commentsToAdd.add(commentToAdd);
+			}
+			//UZUPELNIAM INFORMACJE O ADRESOWANYM USERZE
+			ArrayList<String> dedicationList = new ArrayList<String>();
+			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsernameAddressed;
+			try {
+				userForUsernameAddressed = 
+						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getAddressedUser_id());
+				dedicationList.add(userForUsernameAddressed.getUsername());
+			}
+			//NIC NIE ROBIE BO TO MOŻE NIE BYĆ ADRESOWANE
+			catch (Exception e) { ;}
 			
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd);
+			noteResults.add(noteViewModel);
+		}
+		System.out.println("TEST C1");
+		//LISTA PUBLICZNYCH
+		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results3) {
+			//UZUPELNIAM STRINGA Z USERNAMEM
+			System.out.println("TEST D1");
+			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
+			try {
+				userForUsername = 
+						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
+			}
+			catch (Exception e) { continue;}
+			if(userForUsername == null) continue;
+			System.out.println("TEST D2");
+			//UZUPELNIAM KOMENTARZE
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Comment> commentsDb = (List) session.createQuery("from Comment where note_id = " + n.getNoteId()).list();
+			ArrayList<Comment> commentsToAdd = new ArrayList<Comment>();
+			for(pl.edu.pw.mini.sozpw.dataaccess.models.Comment c : commentsDb) {
+				//UZUPELNIAM USERNAME DLA KOMENTARZA
+				pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsernameComment;
+				try {
+					userForUsernameComment = 
+							(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+							session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
+				}
+				catch (Exception e) { continue;}
+				if(userForUsernameComment == null) continue;
+				Comment commentToAdd = ModelToViewModelConverter.toViewModelComment(c, userForUsernameComment.getUsername());
+				commentsToAdd.add(commentToAdd);
+			}
+			System.out.println("TEST D3");
+			//UZUPELNIAM INFORMACJE O ADRESOWANYM USERZE
+			ArrayList<String> dedicationList = new ArrayList<String>();
+			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsernameAddressed;
+			try {
+				userForUsernameAddressed = 
+						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getAddressedUser_id());
+				dedicationList.add(userForUsernameAddressed.getUsername());
+			}
+			//NIC NIE ROBIE BO TO MOŻE NIE BYĆ ADRESOWANE
+			catch (Exception e) { ;}
+			System.out.println("TEST D4");
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd);
 			noteResults.add(noteViewModel);
 		}
 		System.out.println("Lista koncowa ma " + noteResults.size() + " elementów");
@@ -230,8 +324,24 @@ public class ModelImpl implements Model {
 			// TODO dodać kod do wyciągania z dedication list
 			// TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie
 			// danych
+			int addressedUserId = -1;
+			if (note.getDedicationList().size() > 0) {
+				Query queryForAddressedUser = session
+						.createQuery("from User where username = :username");
+				queryForAddressedUser.setParameter("username", note.getDedicationList().get(0));
+
+				@SuppressWarnings("rawtypes")
+				List resultAddressedUser = query.list();
+				pl.edu.pw.mini.sozpw.dataaccess.models.User userAddressed;
+				try {
+					userAddressed = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultAddressedUser.get(0);
+					addressedUserId = userAddressed.getIdUsers();
+				} catch (Exception e) {
+					;
+				}
+			}
 			pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter
-					.toDbNote(note, -1, false, -1, 1, user.getIdUsers());
+					.toDbNote(note, addressedUserId, false, -1, 1, user.getIdUsers());
 			List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel
 					.getPoints();
 			noteModel.setPoints(null);
@@ -240,14 +350,21 @@ public class ModelImpl implements Model {
 				p.setNote(noteModel);
 				session.save(p);
 			}
+			System.out.println("Dodaję notatkę o id: " + noteModel.getNoteId());
+					
 			if (attachment != null) {
-				pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachmentModel = new pl.edu.pw.mini.sozpw.dataaccess.models.Attachment();
-				attachmentModel.setFile(attachment);
-				attachmentModel.setFilename(note.getFilename());
-				attachmentModel.setFileSize(attachment.length);
-				// attachmentModel.setFileType(fileInfo.getType());
-				attachmentModel.setNote_id(noteModel.getNoteId());
-				session.save(attachmentModel);
+				try {
+					pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachmentModel = new pl.edu.pw.mini.sozpw.dataaccess.models.Attachment();
+					attachmentModel.setFile(attachment);
+					attachmentModel.setFilename(note.getFilename());
+					attachmentModel.setFileSize(attachment.length);
+					attachmentModel.setFileType("");
+					attachmentModel.setNote_id(noteModel.getNoteId());
+					session.save(attachmentModel);
+				}
+				catch(Exception e) {
+					System.out.println(e.getMessage());
+				}
 			}
 			session.getTransaction().commit();
 			return noteModel.getNoteId();
@@ -274,14 +391,14 @@ public class ModelImpl implements Model {
 		} catch (Exception e) {
 			return false;
 		}
-		// TODO dodać kod do wyciągania z dedication list
-		// TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie danych
 
 		// TODO NARAZIE ZROBIONE POPRZEZ USUWANIE I DODAWANIE POTEM ZMIENIĆ
 		// Note model = (Note) session.get(Note.class, note.getId());
 		deleteNote(note.getId());
 		// KONIEC USUWANIA
-
+		
+		
+		//TODO pożądne dodawanie nowej notatki!!
 		pl.edu.pw.mini.sozpw.dataaccess.models.Note noteModel = ModelToViewModelConverter
 				.toDbNote(note, -1, false, -1, 1, user.getIdUsers());
 		List<pl.edu.pw.mini.sozpw.dataaccess.models.Point> backup = noteModel
@@ -312,7 +429,6 @@ public class ModelImpl implements Model {
 			session.beginTransaction();
 			pl.edu.pw.mini.sozpw.dataaccess.models.Note model = (pl.edu.pw.mini.sozpw.dataaccess.models.Note) session.get(pl.edu.pw.mini.sozpw.dataaccess.models.Note.class, noteId);
 			session.delete(model);
-			// TODO usunąć punkty??? kaskada?
 			session.getTransaction().commit();
 			return true;
 		} catch (Exception e) {
@@ -344,50 +460,23 @@ public class ModelImpl implements Model {
 		return true;
 	}
 
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<String> getDedicationHints(String query, int count) {
-		List<String> names = Arrays.asList("Jacob", "Emily", "Michael",
-				"Madison", "Joshua", "Emma", "Matthew", "Hannah",
-				"Christopher", "Olivia", "Andrew", "Abigail", "Daniel",
-				"Isabella", "Ethan", "Ashley", "Joseph", "Samantha", "William",
-				"Elizabeth", "Anthony", "Alexis", "Nicholas", "Sarah", "David",
-				"Alyssa", "Alexander", "Grace", "Ryan", "Sophia", "Tyler",
-				"Taylor", "James", "Brianna", "John", "Lauren", "Jonathan",
-				"Ava", "Brandon", "Kayla", "Christian", "Jessica", "Dylan",
-				"Natalie", "Zachary", "Chloe", "Noah", "Anna", "Samuel",
-				"Victoria", "Benjamin", "Hailey", "Nathan", "Mia", "Logan",
-				"Sydney", "Justin", "Jasmine", "Jose", "Morgan", "Gabriel",
-				"Julia", "Austin", "Destiny", "Kevin", "Rachel", "Caleb",
-				"Megan", "Robert", "Kaitlyn", "Elijah", "Katherine", "Thomas",
-				"Jennifer", "Jordan", "Savannah", "Cameron", "Ella", "Hunter",
-				"Alexandra", "Jack", "Haley", "Angel", "Allison", "Isaiah",
-				"Maria", "Jackson", "Nicole", "Evan", "Mackenzie", "Luke",
-				"Brooke", "Jason", "Makayla", "Isaac", "Kaylee", "Mason",
-				"Lily", "Aaron", "Stephanie", "Connor", "Andrea", "Gavin",
-				"Faith", "Kyle", "Amanda", "Jayden", "Katelyn", "Aidan",
-				"Kimberly", "Juan", "Madeline", "Luis", "Gabrielle", "Charles",
-				"Zoe", "Aiden", "Trinity", "Adam", "Alexa", "Brian", "Mary",
-				"Eric", "Jenna", "Lucas", "Lillian", "Sean", "Paige",
-				"Nathaniel", "Kylie", "Alex", "Gabriella", "Adrian", "Rebecca",
-				"Carlos", "Jordan", "Bryan", "Sara", "Ian", "Addison", "Jesus",
-				"Michelle", "Owen", "Riley", "Julian", "Vanessa", "Cole",
-				"Angelina", "Landon", "Leah", "Diego", "Caroline", "Steven",
-				"Sofia", "Chase", "Audrey", "Timothy", "Maya", "Jeremiah",
-				"Avery", "Sebastian", "Evelyn", "Xavier", "Autumn", "Devin",
-				"Amber", "Cody", "Ariana", "Seth", "Jocelyn", "Hayden",
-				"Claire", "Blake", "Jada", "Richard", "Danielle", "Carter",
-				"Bailey", "Wyatt", "Isabel", "Dominic", "Arianna", "Antonio",
-				"Sierra", "Jaden", "Mariah", "Miguel", "Aaliyah", "Brayden",
-				"Melanie", "Patrick", "Erin", "Alejandro", "Nevaeh", "Carson",
-				"Brooklyn", "Jesse", "Marissa", "Pawel");
-
+		System.out.println("Get dedication hints");
 		List<String> res = new ArrayList<String>();
-		for (String name : names) {
-			if (name.toLowerCase().startsWith(query.toLowerCase())) {
-				res.add(name);
-				if (res.size() == count) {
-					break;
-				}
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		Query queryForUsers = session
+				.createQuery("from User where username like :username");
+		queryForUsers.setParameter("username", query);
+		
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.User> result = queryForUsers.list();
+		System.out.println("Get dedication hints liczba trafien: " + result.size());
+		for(pl.edu.pw.mini.sozpw.dataaccess.models.User u : result) {
+			res.add(u.getUsername());
+			if (res.size() == count) {
+				break;
 			}
 		}
 		return res;
@@ -439,12 +528,24 @@ public class ModelImpl implements Model {
 
 	@Override
 	public boolean changePassword(String oldPass, String newPass) {
+		//TODO ta metoda koniecznie musi mieć id użytkownika albo chociaż username
 		return true;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public byte[] getAttachment(int noteId) {
-		return null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Attachment> results = (List) session.createQuery("from Attachment where note_id = " + noteId).list();
+		pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachment;
+		try {
+			attachment = (pl.edu.pw.mini.sozpw.dataaccess.models.Attachment) results.get(0);
+		} catch (Exception e) {
+			System.out.println("ERROR przy pobieraniu załącznika dla notatki o Id: " + noteId);
+			return null;
+		}
+		return attachment.getFile();
 	}
 
 }
