@@ -3,7 +3,6 @@ package pl.edu.pw.mini.sozpw.dataaccess.model;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -13,15 +12,14 @@ import pl.edu.pw.mini.sozpw.dataaccess.persistence.HibernateUtil;
 import pl.edu.pw.mini.sozpw.dataaccess.services.ModelToViewModelConverter;
 import pl.edu.pw.mini.sozpw.dataaccess.services.RandomStringGenerator;
 
-import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Category;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Comment;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Note;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.User;
 
 public class ModelImpl implements Model {
 
-	private static final String DEFAULT_KEY = "defaultKey";
-	private static int noteId = 1;
+	//private static final String DEFAULT_KEY = "defaultKey";
+	//private static int noteId = 1;
 
 	@Override
 	public User loginUser(String username, String pass) {
@@ -58,7 +56,6 @@ public class ModelImpl implements Model {
 		} catch (Exception e) {
 			return null;
 		}
-		;
 
 		return null;
 	}
@@ -105,9 +102,6 @@ public class ModelImpl implements Model {
 
 	@Override
 	public boolean confirmRegistration(String key) {
-		// TODO @PAWEL: tu nie zmieniam bo ja potrzebuje powiazania tego klucza
-		// z
-		// userem
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		// wyszukuje usera powiazanego z notatka
@@ -131,8 +125,8 @@ public class ModelImpl implements Model {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public List<Note> getNotes(String username) {
-		List<Note> noteResults = new ArrayList<Note>();
-
+		List<Note> noteResults =  new ArrayList<Note>();
+		System.out.println("Get notes");
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		// wyszukuje usera powiazanego z komentarzem
@@ -140,59 +134,77 @@ public class ModelImpl implements Model {
 				.createQuery("from User where username = :username");
 		query.setParameter("username", username);
 
-		@SuppressWarnings("rawtypes")
 		List result = query.list();
 		pl.edu.pw.mini.sozpw.dataaccess.models.User user;
 		try {
 			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
 		} catch (Exception e) {
+			System.out.println("ERROR przy pobieraniu Usera dla ktorego maja byc notatki: " + username);
 			return new ArrayList<Note>();
-
 		}
-
-		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1 = (List) session
-				.createQuery("from Note where user_id = " + user.getIdUsers());
-		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2 = (List) session
-				.createQuery("from Note where addressedUser_id = "
-						+ user.getIdUsers());
-		for (pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results1) {
-			Query queryForUsername = session
-					.createQuery("from User where username = :username");
-			queryForUsername.setParameter("username", username);
-
-			@SuppressWarnings("rawtypes")
-			List resultForUsername = queryForUsername.list();
+		
+		System.out.println("Get notes: Pobrałem usera jego id to: " + user.getIdUsers());
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1;
+		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2;
+		try {
+			results1 = (List) session.createQuery("from Note where user_id = " + user.getIdUsers()).list();
+			results2 = (List) session.createQuery("from Note where addressedUser_id = " + user.getIdUsers()).list();
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getLocalizedMessage());
+			return new ArrayList<Note>();
+		}
+		System.out.println("Lista1 jeden ma " + results1.size() + " elementów");
+		System.out.println("Lista2 jeden ma " + results2.size() + " elementów");
+		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results1) {
+			//Query queryForUsername = session
+			//		.createQuery("from User where username = :username");
+			//queryForUsername.setParameter("idUsers", n.getUser_id());
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
 			try {
-				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername
-						.get(0);
-			} catch (Exception e) {
-				return new ArrayList<Note>();
+				userForUsername = 
+						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 			}
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n,
-					userForUsername.getUsername(), new ArrayList<String>());
+			catch (Exception e) { continue;}
+			if(userForUsername == null) continue;
+			//List resultForUsername = queryForUsername.list();
+			//pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
+			//try {
+			//	userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername.get(0);
+			//} catch (Exception e) {
+			//	continue;
+			//}
+			
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
 			noteResults.add(noteViewModel);
 		}
-
-		for (pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results2) {
-			Query queryForUsername = session
-					.createQuery("from User where username = :username");
-			queryForUsername.setParameter("username", username);
-
-			@SuppressWarnings("rawtypes")
-			List resultForUsername = queryForUsername.list();
+		
+		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results2) {
+			//Query queryForUsername = session
+			//		.createQuery("from User where username = :username");
+			//queryForUsername.setParameter("idUsers", n.getUser_id());
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
 			try {
-				userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername
-						.get(0);
-			} catch (Exception e) {
-				return new ArrayList<Note>();
+				userForUsername = 
+						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
+						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 			}
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n,
-					userForUsername.getUsername(), new ArrayList<String>());
+			catch (Exception e) { continue;}
+			if(userForUsername == null) continue;
+			//List resultForUsername = queryForUsername.list();
+			//pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
+			//try {
+			//	userForUsername = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultForUsername.get(0);
+			//} catch (Exception e) {
+			//	continue;
+			//}
+			
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), new ArrayList<String>());
 			noteResults.add(noteViewModel);
 		}
-
+		System.out.println("Lista koncowa ma " + noteResults.size() + " elementów");
 		return noteResults;
 	}
 
@@ -298,7 +310,7 @@ public class ModelImpl implements Model {
 		try {
 			Session session = HibernateUtil.getSessionFactory().openSession();
 			session.beginTransaction();
-			Note model = (Note) session.get(Note.class, noteId);
+			pl.edu.pw.mini.sozpw.dataaccess.models.Note model = (pl.edu.pw.mini.sozpw.dataaccess.models.Note) session.get(pl.edu.pw.mini.sozpw.dataaccess.models.Note.class, noteId);
 			session.delete(model);
 			// TODO usunąć punkty??? kaskada?
 			session.getTransaction().commit();
