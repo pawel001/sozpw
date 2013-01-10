@@ -29,13 +29,13 @@ public class ModelToViewModelConverter {
 		model.setPoints(notePoints);
 		model.setText(note.getContent());
 		model.setTopic(note.getTopic());
-		model.setCathegory_id(cathegoryId);
+		model.setCathegory_id(note.getCategory().ordinal());
 		model.setUser_id(userId);
 		return model;
 	}
 	
 	//Konwersja NOTATKA Model bazodanowy => ViewModel	
-	public static Note toViewModelNote(pl.edu.pw.mini.sozpw.dataaccess.models.Note model, String username, ArrayList<String> dedicationList, ArrayList<Comment> comments) {
+	public static Note toViewModelNote(pl.edu.pw.mini.sozpw.dataaccess.models.Note model, String username, ArrayList<String> dedicationList, ArrayList<Comment> comments, String filename) {
 		Note note = new Note();
 		note.setUsername(username);
 		note.setLatitude(model.getPoints().get(0).getLatitude());
@@ -48,10 +48,10 @@ public class ModelToViewModelConverter {
 		//TODO dodać wyciąganie komentarzy
 		note.setComments( comments);
 		//TODO to musi być po Idku żeby to później wyciągać z powrotem - nie widzę nigdzie pobierania załączników
-		note.setFilename( "");
+		note.setFilename(filename);
 		note.setDedicationList( dedicationList);
 		//TODO tutaj jakaś poprawka
-		note.setCategory(Category.BRAK_KATEGORII);
+		note.setCategory(Category.values()[model.getCathegory_id()]);
 		
 		return note;
 	}

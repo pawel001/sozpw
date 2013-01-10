@@ -15,16 +15,13 @@ import pl.edu.pw.mini.sozpw.dataaccess.services.RandomStringGenerator;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Comment;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Note;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.User;
-
+//TODO bloki finally i try catche przy każdej transkacji
 public class ModelImpl implements Model {
-
-	//private static final String DEFAULT_KEY = "defaultKey";
-	//private static int noteId = 1;
 
 	@Override
 	public User loginUser(String username, String pass) {
 		try {
-			System.out.println("Czy tutaj");
+			System.out.println("loginUser: " + username);
 			Session session = HibernateUtil.getSessionFactory().openSession();
 			session.beginTransaction();
 
@@ -45,15 +42,12 @@ public class ModelImpl implements Model {
 					&& user.getIsActive()) {
 				User ret = new User();
 				ret.setUsername(username);
+				session.close();
 				return ret;
 			}
 			// TODO zmiana last login date u usera
-			// if (pass.equals("123")) {
-			// User ret = new User();
-			// ret.setUsername(username);
-			// return ret;
-			// }
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			return null;
 		}
 
@@ -62,6 +56,7 @@ public class ModelImpl implements Model {
 
 	@Override
 	public String registerUser(String username, String pass, String mail) {
+		System.out.println("RegisterUser: " + username + " mail: " + mail);
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
@@ -76,15 +71,16 @@ public class ModelImpl implements Model {
 		try {
 			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
 		} catch (Exception e) {
+			session.close();
+			System.out.println(e.getMessage());
 			return null;
 		}
 
-		if (username.equals("123")) {
+		if (user != null) {
+			session.close();
+			System.out.println("Podany username jest zajęty");
 			return null;
 		}
-		if (user != null)
-			return null;
-
 		pl.edu.pw.mini.sozpw.dataaccess.models.User newUser = new pl.edu.pw.mini.sozpw.dataaccess.models.User();
 		java.util.Date date = new java.util.Date();
 		newUser.setCreateDate(new Timestamp(date.getTime()));
@@ -92,16 +88,20 @@ public class ModelImpl implements Model {
 		newUser.setIsActive(false);
 		newUser.setPassword(pass);
 		newUser.setPhone("");
-
+		
+		
+		//TODO SALT UŻYWANY JAKO REGISTER KEY
 		newUser.setUsername(username);
 		newUser.setLastLoginDate(new Timestamp(date.getTime()));
 		String key = RandomStringGenerator.randomString(30);
 		newUser.setSalt(key);
+		session.close();
 		return key;
 	}
 
 	@Override
 	public boolean confirmRegistration(String key) {
+		System.out.println("Confirm registration key:" + key);
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		// wyszukuje usera powiazanego z notatka
@@ -114,11 +114,14 @@ public class ModelImpl implements Model {
 		try {
 			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
 		} catch (Exception e) {
+			session.close();
+			System.out.println(e.getMessage());
 			return false;
 		}
 		user.setIsActive(true);
 		user.setSalt("");
 		session.save(user);
+		session.close();
 		return true;
 	}
 
@@ -126,7 +129,7 @@ public class ModelImpl implements Model {
 	@Override
 	public List<Note> getNotes(String username) {
 		List<Note> noteResults =  new ArrayList<Note>();
-		System.out.println("Get notes");
+		System.out.println("Get notes for username" + username);
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		// wyszukuje usera powiazanego z komentarzem
@@ -140,16 +143,20 @@ public class ModelImpl implements Model {
 			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
 		} catch (Exception e) {
 			System.out.println("ERROR przy pobieraniu Usera dla ktorego maja byc notatki: " + username);
+			System.out.println(e.getMessage());
+			session.close();
 			return new ArrayList<Note>();
 		}
 		
-		System.out.println("Get notes: Pobrałem usera jego id to: " + user.getIdUsers());
 		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1;
 		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2;
 		List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results3;
 		try {
+			//moje
 			results1 = (List) session.createQuery("from Note where user_id = " + user.getIdUsers()).list();
-			results2 = (List) session.createQuery("from Note where addressedUser_id = " + user.getIdUsers()).list();
+			//skierowane do mnie ale nie moje
+			results2 = (List) session.createQuery("from Note where addressedUser_id = " + user.getIdUsers() + " AND user_id <>" + user.getIdUsers()).list();
+			//publiczne nie moje nie skierowane do mnie
 			results3 = (List) session.createQuery("from Note where user_id <> " + user.getIdUsers() 
 					+ " AND " + "addressedUser_id <> " + user.getIdUsers()
 					+ " AND " + "isPrivate = false" 
@@ -157,12 +164,12 @@ public class ModelImpl implements Model {
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
-			System.out.println(e.getLocalizedMessage());
+			session.close();
 			return new ArrayList<Note>();
 		}
 		System.out.println("Lista1 jeden ma " + results1.size() + " elementów");
 		System.out.println("Lista2 jeden ma " + results2.size() + " elementów");
-		System.out.println("Lista3 jeden ma " + results2.size() + " elementów");
+		System.out.println("Lista3 jeden ma " + results3.size() + " elementów");
 		
 		//LISTA MOICH
 		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results1) {
@@ -174,7 +181,7 @@ public class ModelImpl implements Model {
 						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
 						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 			}
-			catch (Exception e) { continue;}
+			catch (Exception e) { System.out.println(e.getMessage()); continue;}
 			if(userForUsername == null) continue;
 
 			//UZUPELNIAM KOMENTARZE
@@ -188,7 +195,7 @@ public class ModelImpl implements Model {
 							(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
 							session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 				}
-				catch (Exception e) { continue;}
+				catch (Exception e) { System.out.println(e.getMessage()); continue;}
 				if(userForUsernameComment == null) continue;
 				Comment commentToAdd = ModelToViewModelConverter.toViewModelComment(c, userForUsernameComment.getUsername());
 				commentsToAdd.add(commentToAdd);
@@ -203,9 +210,17 @@ public class ModelImpl implements Model {
 				dedicationList.add(userForUsernameAddressed.getUsername());
 			}
 			//NIC NIE ROBIE BO TO MOŻE NIE BYĆ ADRESOWANE
-			catch (Exception e) { ;}
+			catch (Exception e) { System.out.println(e.getMessage());}
 			
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd);
+			//UZUPEŁNIAM ZAŁACZNIK:
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Attachment> attachmentsDb = (List) session.createQuery("from Attachment where note_id = " + n.getNoteId()).list();
+			String filename = "";
+			try {
+				pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachment = attachmentsDb.get(0);
+				filename = attachment.getFilename();
+			}
+			catch (Exception e) { ;}
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd, filename);
 			noteResults.add(noteViewModel);
 		}
 		
@@ -218,7 +233,7 @@ public class ModelImpl implements Model {
 						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
 						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 			}
-			catch (Exception e) { continue;}
+			catch (Exception e) { System.out.println(e.getMessage()); continue;}
 			if(userForUsername == null) continue;
 
 			//UZUPELNIAM KOMENTARZE
@@ -232,7 +247,7 @@ public class ModelImpl implements Model {
 							(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
 							session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 				}
-				catch (Exception e) { continue;}
+				catch (Exception e) { System.out.println(e.getMessage()); continue;}
 				if(userForUsernameComment == null) continue;
 				Comment commentToAdd = ModelToViewModelConverter.toViewModelComment(c, userForUsernameComment.getUsername());
 				commentsToAdd.add(commentToAdd);
@@ -247,25 +262,32 @@ public class ModelImpl implements Model {
 				dedicationList.add(userForUsernameAddressed.getUsername());
 			}
 			//NIC NIE ROBIE BO TO MOŻE NIE BYĆ ADRESOWANE
-			catch (Exception e) { ;}
+			catch (Exception e) { System.out.println(e.getMessage());}
 			
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd);
+			//UZUPEŁNIAM ZAŁACZNIK:
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Attachment> attachmentsDb = (List) session.createQuery("from Attachment where note_id = " + n.getNoteId()).list();
+			String filename = "";
+			try {
+				pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachment = attachmentsDb.get(0);
+				filename = attachment.getFilename();
+			}
+			catch (Exception e) { ;}
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd, filename);
 			noteResults.add(noteViewModel);
 		}
-		System.out.println("TEST C1");
+		
 		//LISTA PUBLICZNYCH
 		for(pl.edu.pw.mini.sozpw.dataaccess.models.Note n : results3) {
 			//UZUPELNIAM STRINGA Z USERNAMEM
-			System.out.println("TEST D1");
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsername;
 			try {
 				userForUsername = 
 						(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
 						session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 			}
-			catch (Exception e) { continue;}
+			catch (Exception e) { System.out.println(e.getMessage()); continue;}
 			if(userForUsername == null) continue;
-			System.out.println("TEST D2");
+
 			//UZUPELNIAM KOMENTARZE
 			List<pl.edu.pw.mini.sozpw.dataaccess.models.Comment> commentsDb = (List) session.createQuery("from Comment where note_id = " + n.getNoteId()).list();
 			ArrayList<Comment> commentsToAdd = new ArrayList<Comment>();
@@ -277,12 +299,11 @@ public class ModelImpl implements Model {
 							(pl.edu.pw.mini.sozpw.dataaccess.models.User) 
 							session.get(pl.edu.pw.mini.sozpw.dataaccess.models.User.class, n.getUser_id());
 				}
-				catch (Exception e) { continue;}
+				catch (Exception e) { System.out.println(e.getMessage()); continue;}
 				if(userForUsernameComment == null) continue;
 				Comment commentToAdd = ModelToViewModelConverter.toViewModelComment(c, userForUsernameComment.getUsername());
 				commentsToAdd.add(commentToAdd);
 			}
-			System.out.println("TEST D3");
 			//UZUPELNIAM INFORMACJE O ADRESOWANYM USERZE
 			ArrayList<String> dedicationList = new ArrayList<String>();
 			pl.edu.pw.mini.sozpw.dataaccess.models.User userForUsernameAddressed;
@@ -293,12 +314,21 @@ public class ModelImpl implements Model {
 				dedicationList.add(userForUsernameAddressed.getUsername());
 			}
 			//NIC NIE ROBIE BO TO MOŻE NIE BYĆ ADRESOWANE
+			catch (Exception e) { System.out.println(e.getMessage());}
+			
+			//UZUPEŁNIAM ZAŁACZNIK:
+			List<pl.edu.pw.mini.sozpw.dataaccess.models.Attachment> attachmentsDb = (List) session.createQuery("from Attachment where note_id = " + n.getNoteId()).list();
+			String filename = "";
+			try {
+				pl.edu.pw.mini.sozpw.dataaccess.models.Attachment attachment = attachmentsDb.get(0);
+				filename = attachment.getFilename();
+			}
 			catch (Exception e) { ;}
-			System.out.println("TEST D4");
-			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd);
+			Note noteViewModel = ModelToViewModelConverter.toViewModelNote(n, userForUsername.getUsername(), dedicationList, commentsToAdd, filename);
 			noteResults.add(noteViewModel);
 		}
 		System.out.println("Lista koncowa ma " + noteResults.size() + " elementów");
+		session.close();
 		return noteResults;
 	}
 
@@ -319,9 +349,11 @@ public class ModelImpl implements Model {
 				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result
 						.get(0);
 			} catch (Exception e) {
+				session.close();
+				System.out.println(e.getMessage());
 				return -1;
 			}
-			// TODO dodać kod do wyciągania z dedication list
+			// TODO POPRAWIĆ kod do wyciągania z dedication list
 			// TODO KATEGORIE zmienic na enuma z idkami takimi jak w bazie
 			// danych
 			int addressedUserId = -1;
@@ -331,7 +363,7 @@ public class ModelImpl implements Model {
 				queryForAddressedUser.setParameter("username", note.getDedicationList().get(0));
 
 				@SuppressWarnings("rawtypes")
-				List resultAddressedUser = query.list();
+				List resultAddressedUser = queryForAddressedUser.list();
 				pl.edu.pw.mini.sozpw.dataaccess.models.User userAddressed;
 				try {
 					userAddressed = (pl.edu.pw.mini.sozpw.dataaccess.models.User) resultAddressedUser.get(0);
@@ -367,6 +399,7 @@ public class ModelImpl implements Model {
 				}
 			}
 			session.getTransaction().commit();
+			session.close();
 			return noteModel.getNoteId();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -389,6 +422,7 @@ public class ModelImpl implements Model {
 		try {
 			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
 		} catch (Exception e) {
+			session.close();
 			return false;
 		}
 
@@ -414,11 +448,12 @@ public class ModelImpl implements Model {
 			attachmentModel.setFile(attachment);
 			attachmentModel.setFilename(note.getFilename());
 			attachmentModel.setFileSize(attachment.length);
-			// attachmentModel.setFileType(fileInfo.getType());
+			attachmentModel.setFileType("");
 			attachmentModel.setNote_id(noteModel.getNoteId());
 			session.save(attachmentModel);
 		}
 		session.getTransaction().commit();
+		session.close();
 		return true;
 	}
 
@@ -430,6 +465,7 @@ public class ModelImpl implements Model {
 			pl.edu.pw.mini.sozpw.dataaccess.models.Note model = (pl.edu.pw.mini.sozpw.dataaccess.models.Note) session.get(pl.edu.pw.mini.sozpw.dataaccess.models.Note.class, noteId);
 			session.delete(model);
 			session.getTransaction().commit();
+			session.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -451,12 +487,14 @@ public class ModelImpl implements Model {
 		try {
 			user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result.get(0);
 		} catch (Exception e) {
+			session.close();
 			return false;
 		}
 		pl.edu.pw.mini.sozpw.dataaccess.models.Comment commentModel = ModelToViewModelConverter
 				.toDbComment(comment, user.getIdUsers(), noteId);
 		session.save(commentModel);
 		session.getTransaction().commit();
+		session.close();
 		return true;
 	}
 
@@ -469,7 +507,7 @@ public class ModelImpl implements Model {
 		session.beginTransaction();
 		Query queryForUsers = session
 				.createQuery("from User where username like :username");
-		queryForUsers.setParameter("username", query);
+		queryForUsers.setParameter("username", query + '%');
 		
 		List<pl.edu.pw.mini.sozpw.dataaccess.models.User> result = queryForUsers.list();
 		System.out.println("Get dedication hints liczba trafien: " + result.size());
@@ -479,6 +517,7 @@ public class ModelImpl implements Model {
 				break;
 			}
 		}
+		session.close();
 		return res;
 	}
 
@@ -543,9 +582,11 @@ public class ModelImpl implements Model {
 			attachment = (pl.edu.pw.mini.sozpw.dataaccess.models.Attachment) results.get(0);
 		} catch (Exception e) {
 			System.out.println("ERROR przy pobieraniu załącznika dla notatki o Id: " + noteId);
+			System.out.println(e.getMessage());
+			session.close();
 			return null;
 		}
+		session.close();
 		return attachment.getFile();
 	}
-
 }
