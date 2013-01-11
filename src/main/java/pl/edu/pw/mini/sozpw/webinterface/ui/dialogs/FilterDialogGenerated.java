@@ -125,17 +125,18 @@ public class FilterDialogGenerated extends Composite {
 		resetButton.setStyleName("gwt-ButtonCustom");
 		resetButton.setText("Reset");
 		flexTable_3.setWidget(0, 0, resetButton);
+		resetButton.setHeight("30px");
 		
 		cancelButton = new Button("Anuluj");
 		cancelButton.setStyleName("gwt-ButtonCustom");
 		flexTable_3.setWidget(0, 1, cancelButton);
-		cancelButton.setWidth("60px");
+		cancelButton.setSize("60px", "30px");
 		
 		okButton = new Button("New button");
 		okButton.setStyleName("gwt-ButtonCustom");
 		okButton.setText("Zastosuj");
 		flexTable_3.setWidget(0, 2, okButton);
-		okButton.setWidth("190px");
+		okButton.setSize("190px", "30px");
 	
 		
 	}

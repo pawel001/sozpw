@@ -19,14 +19,18 @@ public class QueryServlet extends HttpServlet {
 	Model model = new ModelImpl();
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) {
 
 		response.setContentType("text/html;charset=UTF-8");
 		List<String> names;
-		if(request.getParameter("type").equals("all")){
-			names= model.getDedicationHints(request.getParameter("q"), MAX_HINTS);
-		}else{
+		if (request.getParameter("type").equals("all")) {
+			names = model.getUsersAndGroupsHints(request.getParameter("q"),
+					MAX_HINTS);
+		} else if (request.getParameter("type").equals("groups")) {
 			names = model.getGroupsHints(request.getParameter("q"), MAX_HINTS);
+		} else {
+			names = model.getUsersHints(request.getParameter("q"), MAX_HINTS);
 		}
 
 		try {

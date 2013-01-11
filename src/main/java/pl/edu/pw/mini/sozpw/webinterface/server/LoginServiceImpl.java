@@ -63,8 +63,8 @@ public class LoginServiceImpl extends RemoteServiceServlet implements LoginServi
 	}
 
 	@Override
-	public boolean changePassword(String oldPass, String newPass) {
-		return model.changePassword(oldPass, newPass);
+	public boolean changePassword(String username, String oldPass, String newPass) {
+		return model.changePassword(username, oldPass, newPass);
 	}
 
 }

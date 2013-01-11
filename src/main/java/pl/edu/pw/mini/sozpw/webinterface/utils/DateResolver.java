@@ -55,7 +55,7 @@ public class DateResolver {
 
 		diff = diff / 60;
 		if (diff == 1)
-			return " godzinę temu";
+			return "godzinę temu";
 		if (diff < 3)
 			return diff + " godziny temu";
 
@@ -67,6 +67,8 @@ public class DateResolver {
 			return "wczoraj, " + hours(current) + ":" + minutes(current);
 
 		diff = diff / 24;
+		if(diff == 1)
+			diff++;
 		if (diff < 4)
 			return diff + " dni temu";
 
@@ -125,6 +127,8 @@ public class DateResolver {
 			return "jutro, " + hours(current) + ":" + minutes(current);
 
 		diff = diff / 24;
+		if(diff == 1)
+			diff++;
 		if (diff < 4)
 			return "za " + diff + " dni";
 

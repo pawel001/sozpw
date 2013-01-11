@@ -8,12 +8,22 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("groupservice")
 public interface GroupService extends RemoteService {
 	
-	List<String> getUserGroups(String username);
+	void assignUserToGroups(String username, List<String> newGroups);
 	
-	Boolean addGroup(String user, String groupName);
+	void assignUsersToGroup(List<String> users, String groupName);
+
+	List<String> getSubscribedGroups(String username);
 	
+	List<String> getSubscribingUsers(String groupName);
+
+	List<String> getCreatedGroups(String username);
+
+	Boolean createGroup(String groupName, String username);
+	
+	Boolean getGroupVisibility(String groupName);
+
+	void setGroupVisibility(String groupName, boolean isPrivate);
+
 	void removeGroup(String groupName);
-	
-	void assignUserToGroups(String username, List<String> groups);
 
 }

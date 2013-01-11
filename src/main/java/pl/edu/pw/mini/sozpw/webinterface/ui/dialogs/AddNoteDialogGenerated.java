@@ -196,6 +196,7 @@ public class AddNoteDialogGenerated extends Composite {
 	}
 	protected void setUploadWidget(UploadWidget widget) {
 		this.uploadWidget = widget;
+		advancedTable.setWidget(3, 1, uploadWidget);
 	}
 	protected TextArea getNoteTextArea() {
 		return noteTextArea;

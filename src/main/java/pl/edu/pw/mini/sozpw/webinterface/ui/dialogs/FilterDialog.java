@@ -55,7 +55,7 @@ public class FilterDialog extends FilterDialogGenerated {
 				+ "/dedicationQuery?type=all";
 		$wnd.$("#filterDedicationTextBox").tokenInput(scriptaddress, {
 			theme : "facebook",
-			hintText : "Wpisz nazwę grupy",
+			hintText : "Wpisz nazwę użytkownika lub grupy",
 			noResultsText : "Brak rezultatów",
 			searchingText : "Szukam..."
 		});

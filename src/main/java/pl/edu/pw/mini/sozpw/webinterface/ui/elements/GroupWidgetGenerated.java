@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Button;
 public class GroupWidgetGenerated extends Composite {
 	private Button deleteButton;
 	private Label groupName;
+	private Button editButton;
 
 	public GroupWidgetGenerated() {
 		
@@ -23,12 +24,18 @@ public class GroupWidgetGenerated extends Composite {
 		groupName = new Label("");
 		groupName.setStyleName("get-GroupwWidgetLabel");
 		flexTable.setWidget(0, 0, groupName);
-		groupName.setSize("274px", "18px");
+		groupName.setSize("252px", "18px");
+		
+		editButton = new Button("New button");
+		editButton.setText("");
+		editButton.setStyleName("gwt-editButton");
+		flexTable.setWidget(0, 1, editButton);
+		editButton.setSize("18px", "18px");
 		
 		deleteButton = new Button("Usuń");
 		deleteButton.setText("");
 		deleteButton.setStyleName("gwt-deleteButton");
-		flexTable.setWidget(0, 1, deleteButton);
+		flexTable.setWidget(0, 2, deleteButton);
 		deleteButton.setSize("18px", "18px");
 	}
 
@@ -37,5 +44,8 @@ public class GroupWidgetGenerated extends Composite {
 	}
 	public Label getGroupName() {
 		return groupName;
+	}
+	public Button getEditButton() {
+		return editButton;
 	}
 }

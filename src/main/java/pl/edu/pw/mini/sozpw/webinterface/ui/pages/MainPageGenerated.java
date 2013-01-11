@@ -13,6 +13,7 @@ public class MainPageGenerated extends Composite {
 	private FlowPanel mapPanel;
 	private ScrollPanel scrollPanel;
 	private FlowPanel notesPanel;
+	private Button refreshButton;
 
 	public MainPageGenerated() {
 
@@ -30,10 +31,10 @@ public class MainPageGenerated extends Composite {
 		absolutePanel.setSize("324px", "560px");
 
 		filtersButton = new Button("Filtruj wiadomości");
-		filtersButton.setText("Filtruj wiadomości");
+		filtersButton.setText("Filtruj");
 		filtersButton.setStyleName("gwt-ButtonCustom");
-		absolutePanel.add(filtersButton, 10, 10);
-		filtersButton.setSize("304px", "30px");
+		absolutePanel.add(filtersButton, 165, 10);
+		filtersButton.setSize("149px", "30px");
 		
 		scrollPanel = new ScrollPanel();
 		absolutePanel.add(scrollPanel, 10, 46);
@@ -43,6 +44,12 @@ public class MainPageGenerated extends Composite {
 		scrollPanel.setWidget(notesPanel);
 		notesPanel.setSize("284px", "100%");
 		notesPanel.setStyleName("gwt-MainNotePanel");
+		
+		refreshButton = new Button("New button");
+		refreshButton.setText("Odśwież");
+		refreshButton.setStyleName("gwt-ButtonCustom");
+		absolutePanel.add(refreshButton, 10, 10);
+		refreshButton.setSize("149px", "30px");
 	}
 
 	protected Button getFiltersButton() {
@@ -58,5 +65,8 @@ public class MainPageGenerated extends Composite {
 	}
 	public FlowPanel getNotesPanel() {
 		return notesPanel;
+	}
+	public Button getRefreshButton() {
+		return refreshButton;
 	}
 }
