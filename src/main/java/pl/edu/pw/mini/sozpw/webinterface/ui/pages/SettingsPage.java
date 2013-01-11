@@ -12,7 +12,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SettingsPage extends SettingsPageGenerated {
 
-	public SettingsPage(String username) {
+	public SettingsPage(final String username) {
 
 		getChangePassButton().addClickHandler(new ClickHandler() {
 
@@ -28,7 +28,7 @@ public class SettingsPage extends SettingsPageGenerated {
 					LoginServiceAsync loginService = (LoginServiceAsync) GWT
 							.create(LoginService.class);
 
-					loginService.changePassword(oldPass, newPass,
+					loginService.changePassword(username, oldPass, newPass,
 							new AsyncCallback<Boolean>() {
 
 								@Override

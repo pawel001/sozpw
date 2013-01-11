@@ -36,7 +36,7 @@ public class ModelImpl implements Model {
 	}
 
 	@Override
-	public boolean confirmRegistration(String key) {
+	public boolean confirmRegistration(String user, String key) {
 		return key.equals(DEFAULT_KEY);
 	}
 
@@ -128,7 +128,7 @@ public class ModelImpl implements Model {
 	}
 
 	@Override
-	public List<String> getDedicationHints(String query, int count) {
+	public List<String> getUsersHints(String query, int count) {
 		List<String> names = Arrays.asList("Jacob", "Emily", "Michael",
 				"Madison", "Joshua", "Emma", "Matthew", "Hannah",
 				"Christopher", "Olivia", "Andrew", "Abigail", "Daniel",
@@ -177,29 +177,20 @@ public class ModelImpl implements Model {
 	}
 
 	@Override
-	public List<String> getUserGropus(String user) {
-		List<String> res = new ArrayList<String>();
-		
+	public List<String> getSubscribedGroups(String user) {
 		if (user.equals("Pawel")) {
-			res.add("GrupaW1");
-			res.add("Warszawa");
+			return Arrays.asList("GrupaW1");
 		}
-
-		return res;
+		return null;
 	}
 
 	@Override
-	public boolean addGroup(String user, String groupName) {
+	public boolean createGroup(String groupName, String username) {
 		return true;
 	}
 
 	@Override
 	public void removeGroup(String gropuName) {
-		return;
-	}
-
-	@Override
-	public void assignUserToGroups(String username, List<String> groups) {
 		return;
 	}
 
@@ -217,11 +208,12 @@ public class ModelImpl implements Model {
 				}
 			}
 		}
+		
 		return res;
 	}
 
 	@Override
-	public boolean changePassword(String oldPass, String newPass) {
+	public boolean changePassword(String username, String oldPass, String newPass) {
 		return true;
 	}
 
@@ -230,4 +222,45 @@ public class ModelImpl implements Model {
 		return null;
 	}
 
+	@Override
+	public List<String> getCreatedGroups(String username) {
+		return Arrays.asList("GrupaW1", "Warszawa", "Riviera",
+				"MiNI", "Politechnika");
+	}
+
+	@Override
+	public boolean addUser(String groupName, String username) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean removeUser(String groupName, String username) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<String> getUsersAndGroupsHints(String query, int count) {
+		List<String> result = getUsersHints(query, count);
+		result.addAll(getGroupsHints(query, count));
+		return result.subList(0, 5);
+	}
+
+	@Override
+	public List<String> getSubscribingUsers(String groupName) {
+		return Arrays.asList("Brooklyn", "Jesse", "Marissa", "Pawel");
+	}
+
+	@Override
+	public boolean getGroupVisibility(String groupName) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void setGroupVisibility(String groupName, boolean isPrivate) {
+		// TODO Auto-generated method stub
+		
+	}
 }

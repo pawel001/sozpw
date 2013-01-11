@@ -13,6 +13,9 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -32,9 +35,19 @@ public class GroupPage extends GroupPageGenerated {
 				addGroup();
 			}
 		});
-		
+
+		getNewGroupTextBox().addKeyPressHandler(new KeyPressHandler() {
+
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+					addGroup();
+				}
+			}
+		});
+
 		getConfirmSubButton().addClickHandler(new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent event) {
 				JsArray<Dedicated> groupsList = getSelectedTokens();
@@ -42,21 +55,45 @@ public class GroupPage extends GroupPageGenerated {
 				for (int i = 0; i < groupsList.length(); i++) {
 					groups.add(groupsList.get(i).getName());
 				}
-				groupService.assignUserToGroups(GroupPage.this.username, groups, new AsyncCallback<Void>() {
-					
-					@Override
-					public void onSuccess(Void result) {
-						mainPage.initNotes();
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						Window.alert("assignUserToGroups() failed");
-					}
-				});
-				
+				groupService.assignUserToGroups(GroupPage.this.username,
+						groups, new AsyncCallback<Void>() {
+
+							@Override
+							public void onSuccess(Void result) {
+								mainPage.initNotes();
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("assignUserToGroups() failed");
+							}
+						});
+
 			}
 		});
+		
+		groupService.getCreatedGroups(username,
+				new AsyncCallback<List<String>>() {
+
+					@Override
+					public void onSuccess(List<String> result) {
+
+						if (result != null) {
+							for (String group : result) {
+								getUserGroupsPanel().add(
+										new GroupWidget(group, GroupPage.this));
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("getCreatedGroups() failed #### "
+								+ caught.getLocalizedMessage() + " #### "
+								+ caught.getMessage());
+
+					}
+				});
 	}
 
 	public native void setTokenInput() /*-{
@@ -84,20 +121,23 @@ public class GroupPage extends GroupPageGenerated {
 	public void initFields() {
 		setTokenInput();
 
-		groupService.getUserGroups(username, new AsyncCallback<List<String>>() {
+		groupService.getSubscribedGroups(username,
+				new AsyncCallback<List<String>>() {
 
-			@Override
-			public void onSuccess(List<String> result) {
-				for (String group : result) {
-					addToken(group);
-				}
-			}
+					@Override
+					public void onSuccess(List<String> result) {
+						for (String group : result) {
+							addToken(group);
+						}
+					}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				Window.alert("getUserGroups() failed");
-			}
-		});
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("getSubscribedGroups() failed #### "
+								+ caught.getLocalizedMessage() + " #### "
+								+ caught.getMessage());
+					}
+				});
 	}
 
 	public void addGroup() {
@@ -110,7 +150,7 @@ public class GroupPage extends GroupPageGenerated {
 			getErrorLabel().setText("");
 		}
 
-		groupService.addGroup(username, getNewGroupTextBox().getValue(),
+		groupService.createGroup(username, getNewGroupTextBox().getValue(),
 				new AsyncCallback<Boolean>() {
 
 					@Override

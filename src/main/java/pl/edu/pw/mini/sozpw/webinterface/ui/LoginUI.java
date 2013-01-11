@@ -118,7 +118,7 @@ public class LoginUI extends LoginUIGenerated {
 					sdb.add(new RegisterDialog(sdb));
 					sdb.center();
 				} else {
-					getRegisterLabel().setText("Podany login już istnieje w bazie");
+					getRegisterLabel().setText("Błąd. Nie można zarejestrować użytkownika");
 				}
 
 				getRegisterWaitImage().setVisible(false);

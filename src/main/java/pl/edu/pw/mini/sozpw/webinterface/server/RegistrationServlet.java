@@ -14,6 +14,7 @@ import pl.edu.pw.mini.sozpw.dataaccess.model.ModelImpl;
 public class RegistrationServlet extends HttpServlet {
 
 	public static final String REG_PARAM_NAME = "registerKey";
+	public static final String USER_PARAM_NAME = "user";
 
 	Model model = new ModelImpl();
 
@@ -21,10 +22,11 @@ public class RegistrationServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 
 		String key = request.getParameter(REG_PARAM_NAME);
+		String user = request.getParameter(USER_PARAM_NAME);
 		String result;
 
 		// IMPORTANT! key can be null
-		if (model.confirmRegistration(key)) {
+		if (model.confirmRegistration(user, key)) {
 			result = "Rejestracja zakończona. Przejdź do strony głównej aby się zalogować.";
 		} else {
 			result = "Nieprawidłowy link.";

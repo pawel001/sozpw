@@ -55,6 +55,14 @@ public class MainPage extends MainPageGenerated {
 				fd.initDedications(MainPage.this.noteFilter);
 			}
 		});
+		
+		getRefreshButton().addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				MainPage.this.initNotes();
+			}
+		});
 	}
 	
 	private void initTimer(){

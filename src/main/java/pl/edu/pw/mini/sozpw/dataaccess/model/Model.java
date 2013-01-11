@@ -8,13 +8,17 @@ import pl.edu.pw.mini.sozpw.webinterface.dataobjects.User;
 
 public interface Model {
 
+	//User functions
 	User loginUser(String username, String pass);
 
 	String registerUser(String username, String pass, String mail);
 
-	boolean confirmRegistration(String key);
+	boolean confirmRegistration(String username, String key);
 
-	List<Note> getNotes(String user);
+	boolean changePassword(String username, String oldPass, String newPass);
+
+	//Notes functions
+	List<Note> getNotes(String username);
 
 	Integer addNote(Note note, byte[] attachment);
 
@@ -22,22 +26,34 @@ public interface Model {
 
 	boolean editNote(Note note, byte[] attachment);
 
+	byte[] getAttachment(int noteId);
+
 	boolean deleteNote(Integer noteId);
-
-	List<String> getDedicationHints(String query, int count);
 	
-	List<String> getGroupsHints(String query, int count);
+	//Groups functions
+	List<String> getSubscribedGroups(String username);
+	
+	List<String> getSubscribingUsers(String groupName);
+	
+	List<String> getCreatedGroups(String username);
 
-	List<String> getUserGropus(String user);
-
-	boolean addGroup(String user, String groupName);
+	boolean createGroup(String groupName, String username);
+	
+	boolean getGroupVisibility(String groupName);
+	
+	void setGroupVisibility(String groupName, boolean isPrivate);
+	
+	boolean addUser(String groupName, String username);
+	
+	boolean removeUser(String groupName, String username);
 
 	void removeGroup(String groupName);
 
-	void assignUserToGroups(String username, List<String> groups);
-	
-	boolean changePassword(String oldPass, String newPass);
-	
-	byte[] getAttachment(int noteId);
+	//Helper functions
+	List<String> getGroupsHints(String query, int count);
+
+	List<String> getUsersHints(String query, int count);
+
+	List<String> getUsersAndGroupsHints(String query, int count);
 
 }

@@ -36,7 +36,7 @@ public class RegisterMailSender {
 			message.setSubject("SOZPW Rejestracja");
 
 			String msgtext = "Aby zakończyć rejestrację kliknij link:  http://quintus.mini.pw.edu.pl/registrationService?"
-					+ RegistrationServlet.REG_PARAM_NAME + "=" + registerKey;
+					+ RegistrationServlet.REG_PARAM_NAME + "=" + registerKey + "&" + RegistrationServlet.USER_PARAM_NAME + "=" + username;
 
 			message.setText(msgtext);
 

@@ -31,6 +31,16 @@
 	background-image: url("images/delete2.png");
 	cursor: pointer;
 }
+.gwt-editButton {
+	background: none;
+	background-image: url("images/edit.png");
+	border: none;
+}
+
+.gwt-editButton:HOVER {
+	background-image: url("images/edit2.png");
+	cursor: pointer;
+}
 .gwt-Widget {
 	background-color: #ffffff;
 	border:1px solid #ccd5e4;

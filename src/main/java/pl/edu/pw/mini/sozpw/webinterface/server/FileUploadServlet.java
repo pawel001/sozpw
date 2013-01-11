@@ -18,12 +18,11 @@ import pl.edu.pw.mini.sozpw.webinterface.utils.FileUploadProperties;
 @SuppressWarnings("serial")
 public class FileUploadServlet extends HttpServlet {
 
-	public static final int MAX_FILE_SIZE = 1024 * 1024;
+	public static final int MAX_FILE_SIZE = 2 * 1024 * 1024;
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 
-		System.out.println("FileServlet doPost() method");
 		response.setContentType("text/html;charset=UTF-8");
 
 		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
@@ -38,9 +37,6 @@ public class FileUploadServlet extends HttpServlet {
 					FileItemStream item = iter.next();
 
 					if (!item.isFormField()) {
-						
-						System.out.println(item.getName());
-						System.out.println(item.getName().replaceAll("^.*[\\/]", ""));
 
 						InputStream stream = item.openStream();
 						ByteArrayOutputStream out = new ByteArrayOutputStream();

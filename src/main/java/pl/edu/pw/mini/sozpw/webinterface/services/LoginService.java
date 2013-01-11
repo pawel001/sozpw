@@ -14,6 +14,6 @@ public interface LoginService extends RemoteService {
 	
 	boolean register(String username, String pass, String mail);
 	
-	boolean changePassword(String oldPass, String newPass);
+	boolean changePassword(String username, String oldPass, String newPass);
 
 }
