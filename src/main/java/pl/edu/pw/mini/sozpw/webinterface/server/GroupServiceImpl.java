@@ -42,13 +42,13 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 		List<String> summedGroups = new ArrayList<String>();
 		
 		for(String group : newGroups){
-			if(summedGroups.contains(group)){
+			if(!summedGroups.contains(group)){
 				summedGroups.add(group);
 			}
 		}
 		
 		for(String group : oldGropus){
-			if(summedGroups.contains(group)){
+			if(!summedGroups.contains(group)){
 				summedGroups.add(group);
 			}
 		}
@@ -73,13 +73,13 @@ public class GroupServiceImpl extends RemoteServiceServlet implements GroupServi
 		List<String> summedUsers = new ArrayList<String>();
 		
 		for(String user : newUsers){
-			if(summedUsers.contains(user)){
+			if(!summedUsers.contains(user)){
 				summedUsers.add(user);
 			}
 		}
 		
 		for(String user : oldUsers){
-			if(summedUsers.contains(user)){
+			if(!summedUsers.contains(user)){
 				summedUsers.add(user);
 			}
 		}

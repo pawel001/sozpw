@@ -11,13 +11,12 @@ import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Note;
 public class ModelToViewModelConverter {
 	
 	//konwersja NOTATKA ViewModel => Model bazodanowy
-	public static pl.edu.pw.mini.sozpw.dataaccess.models.Note toDbNote(Note note, int addressedUserId, boolean isAddressedToGroup, int groupId, int cathegoryId, int userId) {
+	public static pl.edu.pw.mini.sozpw.dataaccess.models.Note toDbNote(Note note, int addressedUserId, boolean isAddressedToGroup, int groupId, int userId, boolean isPrivate) {
 		pl.edu.pw.mini.sozpw.dataaccess.models.Note model = new pl.edu.pw.mini.sozpw.dataaccess.models.Note();
 		model.setAddressedUser_id(addressedUserId);
 		model.setCreateDate(new Timestamp(note.getCreateDate()));
 		model.setExpirationDate(new Timestamp(note.getExpiryDate()));
-		//TODO dodać pole zastanowić się jak to ma być
-		model.setIsPrivate(true);
+		model.setIsPrivate(isPrivate);
 		model.setIsAddressedToGroup(isAddressedToGroup);
 		model.setGroup_id(groupId);
 		
@@ -45,12 +44,9 @@ public class ModelToViewModelConverter {
 		note.setCreateDate( model.getCreateDate().getTime());
 		note.setContent( model.getText());
 		note.setId(model.getNoteId());
-		//TODO dodać wyciąganie komentarzy
 		note.setComments( comments);
-		//TODO to musi być po Idku żeby to później wyciągać z powrotem - nie widzę nigdzie pobierania załączników
 		note.setFilename(filename);
 		note.setDedicationList( dedicationList);
-		//TODO tutaj jakaś poprawka
 		note.setCategory(Category.values()[model.getCathegory_id()]);
 		
 		return note;
@@ -62,15 +58,16 @@ public class ModelToViewModelConverter {
 		commentModel.setNote_id(noteId);
 		commentModel.setUser_id(userId);
 		commentModel.setText(comment.getComment());
+		commentModel.setCreateDate(new Timestamp(comment.getDate()));
 		return commentModel;
 	} 
 	
-	//TODO Konwersja KOMENTARZ Model bazodanowy => Viewmodel
+	// Konwersja KOMENTARZ Model bazodanowy => Viewmodel
 	public static Comment toViewModelComment(pl.edu.pw.mini.sozpw.dataaccess.models.Comment comment, String username) {
 		Comment result = new Comment();
 		result.setComment(comment.getText());
 		result.setUsername(username);
-		result.setDate(0);
+		result.setDate(comment.getCreateDate().getTime());
 		return result;
 	}
 }

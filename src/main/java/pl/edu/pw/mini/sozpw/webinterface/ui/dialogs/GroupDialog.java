@@ -33,8 +33,7 @@ public class GroupDialog extends GroupDialogGenerated {
 
 					@Override
 					public void onValueChange(ValueChangeEvent<Boolean> event) {
-						if (getPublicCheckBox().getValue()) {
-							groupService.setGroupVisibility(GroupDialog.this.groupName, true,
+							groupService.setGroupVisibility(GroupDialog.this.groupName, getPublicCheckBox().getValue(),
 									new AsyncCallback<Void>() {
 
 										@Override
@@ -47,7 +46,6 @@ public class GroupDialog extends GroupDialogGenerated {
 											Window.alert("trueGroupVisibility() failed");
 										}
 									});
-						}
 
 					}
 				});

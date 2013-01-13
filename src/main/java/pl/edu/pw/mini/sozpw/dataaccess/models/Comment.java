@@ -1,5 +1,7 @@
 package pl.edu.pw.mini.sozpw.dataaccess.models;
 
+import java.sql.Timestamp;
+
 public class Comment implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	
@@ -7,7 +9,16 @@ public class Comment implements java.io.Serializable {
 	public Integer note_id;
 	public String text;
 	public Integer user_id;
+	public Timestamp createDate;
 	
+	public Timestamp getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Timestamp createDate) {
+		this.createDate = createDate;
+	}
+
 	public Integer getCommentId() {
 		return commentId;
 	}

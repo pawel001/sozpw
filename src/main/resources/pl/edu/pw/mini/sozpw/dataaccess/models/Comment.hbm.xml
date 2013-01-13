@@ -17,5 +17,8 @@
         <property name="user_id" type="java.lang.Integer">
             <column name="User_id" not-null="true" unique="false" />
         </property>
+        <property name="createDate" type="java.sql.Timestamp">
+            <column name="CreateDate" not-null="true" unique="false" />
+        </property>
     </class>
 </hibernate-mapping>
