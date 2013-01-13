@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="pl.edu.pw.mini.sozpw.dataaccess.models.GroupXUser" table="groupsxusers"
+		catalog="test">
+		<id name="groupXUserId" type="java.lang.Integer">
+			<column name="idGroupsXUsers" />
+			<generator class="identity" />
+		</id>
+        <property name="userId" type="java.lang.Integer">
+            <column name="User_id" not-null="true" unique="false" />
+        </property>
+        <property name="groupId" type="java.lang.Integer">
+            <column name="Group_id" not-null="true" unique="false" />
+        </property>
+	</class>
+</hibernate-mapping>

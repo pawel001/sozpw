@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="pl.edu.pw.mini.sozpw.dataaccess.models.Group" table="groups"
+		catalog="test">
+		<id name="groupId" type="java.lang.Integer">
+			<column name="idGroups" />
+			<generator class="identity" />
+		</id>
+		<property name="isPrivate" type="boolean">
+			<column name="isPrivate" not-null="true" unique="false" />
+		</property>
+		<property name="isGeneric" type="boolean">
+			<column name="isGeneric" not-null="false" unique="false" />
+		</property>
+		<property name="ownerId" type="java.lang.Integer">
+            <column name="owner_id" not-null="false" unique="false" />
+        </property>
+		<property name="name" type="string">
+			<column name="name" not-null="true" unique="false" />
+		</property>
+	</class>
+</hibernate-mapping>
