@@ -2,6 +2,7 @@
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -66,7 +67,7 @@ public class ModelImpl implements Model {
 
 			// najpierw sprawdzam czy user istnieje, jak nie to go tworzę
 			Query query = session
-					.createQuery("from User where username = :username");
+					.createQuery("from User where username=:username");
 			query.setParameter("username", username);
 
 			List result = query.list();
@@ -75,11 +76,32 @@ public class ModelImpl implements Model {
 				user = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result
 						.get(0);
 				if (user != null) {
-					System.out.println("Podany username jest zajęty");
+					System.out
+							.println("Podany username jest zajęty przez innego użytkownika");
 					return null;
 				}
 			} catch (Exception e) {
-				System.out.println("Username wolny");
+				System.out
+						.println("Username wolny (nie ma innego użytkownika o podanej nazwie)");
+			}
+			// sprawdzam czy istnieje grupa o tej samej nazwie:
+			Query queryGroupTaken = session
+					.createQuery("from Group where name=:name");
+			queryGroupTaken.setString("name", username);
+
+			List resultGroupTaken = queryGroupTaken.list();
+			pl.edu.pw.mini.sozpw.dataaccess.models.Group groupTaken;
+			try {
+				groupTaken = (pl.edu.pw.mini.sozpw.dataaccess.models.Group) resultGroupTaken
+						.get(0);
+				if (groupTaken != null) {
+					System.out
+							.println("Podany username jest zajęty przez grupę");
+					return null;
+				}
+			} catch (Exception e) {
+				System.out
+						.println("Username wolny (nie ma grupy o podanej nazwie)");
 			}
 
 			pl.edu.pw.mini.sozpw.dataaccess.models.User newUser = new pl.edu.pw.mini.sozpw.dataaccess.models.User();
@@ -169,22 +191,41 @@ public class ModelImpl implements Model {
 				return new ArrayList<Note>();
 			}
 
+			Date date = new Date();
 			List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results1;
 			List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results2;
 			List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> results3;
 
+			Query queryMine = session
+					.createQuery("from Note where user_id = "
+							+ user.getIdUsers()
+							+ " AND (expirationDate = null OR expirationDate>:expirationDate)");
+			queryMine.setDate("expirationDate", date);
+
+			Query queryToMe = session
+					.createQuery("from Note where addressedUser_id = "
+							+ user.getIdUsers()
+							+ " AND user_id <>"
+							+ user.getIdUsers()
+							+ " AND (expirationDate = null OR expirationDate>:expirationDate)");
+			queryToMe.setDate("expirationDate", date);
+
+			Query queryPublic = session
+					.createQuery("from Note where user_id <> "
+							+ user.getIdUsers()
+							+ " AND "
+							+ "addressedUser_id <> "
+							+ user.getIdUsers()
+							+ " AND "
+							+ "isPrivate = false"
+							+ " AND (expirationDate = null OR expirationDate>:expirationDate)");
+			queryPublic.setDate("expirationDate", date);
 			// moje
-			results1 = (List) session.createQuery(
-					"from Note where user_id = " + user.getIdUsers()).list();
+			results1 = (List) queryMine.list();
 			// skierowane do mnie ale nie moje
-			results2 = (List) session.createQuery(
-					"from Note where addressedUser_id = " + user.getIdUsers()
-							+ " AND user_id <>" + user.getIdUsers()).list();
+			results2 = (List) queryToMe.list();
 			// publiczne nie moje nie skierowane do mnie
-			results3 = (List) session.createQuery(
-					"from Note where user_id <> " + user.getIdUsers() + " AND "
-							+ "addressedUser_id <> " + user.getIdUsers()
-							+ " AND " + "isPrivate = false").list();
+			results3 = (List) queryPublic.list();
 
 			System.out.println("Lista1 jeden ma " + results1.size()
 					+ " elementów");
@@ -203,14 +244,21 @@ public class ModelImpl implements Model {
 					"from GroupXUser where userId = " + user.getIdUsers())
 					.list();
 			for (pl.edu.pw.mini.sozpw.dataaccess.models.GroupXUser gxu : resultsForGXU) {
-				List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> resultsFromGXU = (List) session
-						.createQuery(
-								"from Note where group_id = "
-										+ gxu.getGroupId() + " AND user_id <> "
-										+ user.getIdUsers() + " AND "
-										+ "addressedUser_id <> "
-										+ user.getIdUsers() + " AND "
-										+ "isPrivate = true").list();
+				Query queryTemp = session
+						.createQuery("from Note where group_id = "
+								+ gxu.getGroupId()
+								+ " AND user_id <> "
+								+ user.getIdUsers()
+								+ " AND "
+								+ "addressedUser_id <> "
+								+ user.getIdUsers()
+								+ " AND "
+								+ "isPrivate = true"
+								+ " AND (expirationDate = null OR expirationDate>:expirationDate)");
+				
+				queryTemp.setDate("expirationDate", date);
+				List<pl.edu.pw.mini.sozpw.dataaccess.models.Note> resultsFromGXU = (List) queryTemp
+						.list();
 				System.out.println("Dla grupy o id: " + gxu.getGroupId()
 						+ " dodano: " + resultsFromGXU.size() + " notatek");
 				resultsFinal.addAll(resultsFromGXU);
@@ -478,6 +526,7 @@ public class ModelImpl implements Model {
 					groupAddressed = (pl.edu.pw.mini.sozpw.dataaccess.models.Group) resultAddressedGroup
 							.get(0);
 					addressGroupId = groupAddressed.getGroupId();
+					isAddressedToGroup = true;
 				} catch (Exception e) {
 					;
 				}
@@ -575,6 +624,7 @@ public class ModelImpl implements Model {
 					groupAddressed = (pl.edu.pw.mini.sozpw.dataaccess.models.Group) resultAddressedGroup
 							.get(0);
 					addressGroupId = groupAddressed.getGroupId();
+					isAddressedToGroup = true;
 				} catch (Exception e) {
 					;
 				}
@@ -794,6 +844,46 @@ public class ModelImpl implements Model {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			session.beginTransaction();
+
+			// najpierw sprawdzam czy user istnieje, jak nie to go tworzę
+			Query query = session
+					.createQuery("from User where username=:username");
+			query.setParameter("username", groupName);
+
+			List result = query.list();
+			pl.edu.pw.mini.sozpw.dataaccess.models.User userTaken;
+			try {
+				userTaken = (pl.edu.pw.mini.sozpw.dataaccess.models.User) result
+						.get(0);
+				if (userTaken != null) {
+					System.out
+							.println("Podany groupname jest zajęty przez innego użytkownika");
+					return false;
+				}
+			} catch (Exception e) {
+				System.out
+						.println("groupname wolny (nie ma innego użytkownika o podanej nazwie)");
+			}
+			// sprawdzam czy istnieje grupa o tej samej nazwie:
+			Query queryGroupTaken = session
+					.createQuery("from Group where name=:name");
+			queryGroupTaken.setString("name", groupName);
+
+			List resultGroupTaken = queryGroupTaken.list();
+			pl.edu.pw.mini.sozpw.dataaccess.models.Group groupTaken;
+			try {
+				groupTaken = (pl.edu.pw.mini.sozpw.dataaccess.models.Group) resultGroupTaken
+						.get(0);
+				if (groupTaken != null) {
+					System.out
+							.println("Podany groupname jest zajęty przez grupę");
+					return false;
+				}
+			} catch (Exception e) {
+				System.out
+						.println("groupname wolny (nie ma grupy o podanej nazwie)");
+			}
+
 			Query query1 = session
 					.createQuery("from User where username=:username");
 			query1.setParameter("username", username);

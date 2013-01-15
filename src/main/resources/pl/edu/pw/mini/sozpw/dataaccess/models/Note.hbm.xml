@@ -30,7 +30,7 @@
             <column name="CreateDate" not-null="true" unique="false" />
         </property>
         <property name="expirationDate" type="java.sql.Timestamp">
-            <column name="ExpirationDate" not-null="false" unique="true" />
+            <column name="ExpirationDate" not-null="false" unique="false" />
         </property>
         <property name="isPrivate" type="boolean">
             <column name="IsPrivate" not-null="true" unique="false" />
