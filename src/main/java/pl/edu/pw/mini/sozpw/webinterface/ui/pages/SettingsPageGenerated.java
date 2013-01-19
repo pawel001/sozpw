@@ -1,13 +1,12 @@
 package pl.edu.pw.mini.sozpw.webinterface.ui.pages;
 
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 
 public class SettingsPageGenerated extends Composite {
 	private PasswordTextBox newPassTextBox;
@@ -21,15 +20,11 @@ public class SettingsPageGenerated extends Composite {
 		FlowPanel flowPanel = new FlowPanel();
 		flowPanel.setStyleName("gwt-SettingsPage");
 		initWidget(flowPanel);
-		flowPanel.setSize("1024px", "560px");
-		
-		VerticalPanel verticalPanel = new VerticalPanel();
-		flowPanel.add(verticalPanel);
-		verticalPanel.setSize("824px", "480px");
+		flowPanel.setSize("100%", "100%");
 		
 		FlowPanel flowPanel_1 = new FlowPanel();
+		flowPanel.add(flowPanel_1);
 		flowPanel_1.setStyleName("gwt-insidePanel");
-		verticalPanel.add(flowPanel_1);
 		
 		Label lblZmieHaso = new Label("Zmień hasło");
 		flowPanel_1.add(lblZmieHaso);

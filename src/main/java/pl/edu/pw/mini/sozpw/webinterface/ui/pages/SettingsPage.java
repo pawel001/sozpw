@@ -2,6 +2,8 @@ package pl.edu.pw.mini.sozpw.webinterface.ui.pages;
 
 import pl.edu.pw.mini.sozpw.webinterface.services.LoginService;
 import pl.edu.pw.mini.sozpw.webinterface.services.LoginServiceAsync;
+import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.InfoDialog;
+import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.StyledDialogBox;
 import pl.edu.pw.mini.sozpw.webinterface.utils.Validator;
 
 import com.google.gwt.core.shared.GWT;
@@ -37,6 +39,9 @@ public class SettingsPage extends SettingsPageGenerated {
 										getOldPassTextBox().setText("");
 										getNewPassTextBox().setText("");
 										getNewPassConfirmTextBox().setText("");
+										StyledDialogBox sdb = new StyledDialogBox("Potwierdzenie");
+										sdb.add(new InfoDialog(sdb, "Hasło zostało zmienione"));
+										sdb.center();
 									} else {
 										getErrorLabel().setText(
 												"Nie można zmienić hasła");

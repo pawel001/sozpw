@@ -26,10 +26,10 @@ public class AddNoteDialog extends AddNoteDialogGenerated {
 				parent.hide();
 			}
 		});
-		
 	}
 
-	public AddNoteDialog(final DialogBox parent, MapDialog mapDialog, MainPage mainPage) {
+	public AddNoteDialog(final DialogBox parent, MapDialog mapDialog,
+			MainPage mainPage) {
 		this(parent, mainPage);
 		this.mapDialog = mapDialog;
 
@@ -42,7 +42,8 @@ public class AddNoteDialog extends AddNoteDialogGenerated {
 		});
 	}
 
-	public AddNoteDialog(final DialogBox parent, final Note note, MainPage mainPage) {
+	public AddNoteDialog(final DialogBox parent, final Note note,
+			MainPage mainPage) {
 		this(parent, mainPage);
 		getTopicTextBox().setText(note.getTopic());
 		getNoteTextArea().setText(note.getContent());
@@ -55,7 +56,8 @@ public class AddNoteDialog extends AddNoteDialogGenerated {
 		this.getSaveButton().addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				AddNoteDialog.this.mainPage.processNote(getUpdatedNoteCopy(note));
+				AddNoteDialog.this.mainPage
+						.processNote(getUpdatedNoteCopy(note));
 				parent.hide();
 			}
 		});
@@ -113,7 +115,8 @@ public class AddNoteDialog extends AddNoteDialogGenerated {
 			theme : "facebook",
 			hintText : "Wpisz nazwę użytkownika lub grupy",
 			noResultsText : "Brak rezultatów",
-			searchingText : "Szukam..."
+			searchingText : "Szukam...",
+			tokenLimit: 1
 		});
 	}-*/;
 
@@ -122,7 +125,10 @@ public class AddNoteDialog extends AddNoteDialogGenerated {
 	}-*/;
 
 	public native void addToken(String n) /*-{
-		$wnd.$("#inputTextBox").tokenInput("add", {"id": 0, "name": n});
+		$wnd.$("#inputTextBox").tokenInput("add", {
+			"id" : 0,
+			"name" : n
+		});
 	}-*/;
 
 }

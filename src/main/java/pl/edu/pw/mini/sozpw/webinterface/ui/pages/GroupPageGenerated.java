@@ -20,7 +20,7 @@ public class GroupPageGenerated extends Composite {
 		FlowPanel flowPanel = new FlowPanel();
 		flowPanel.setStyleName("gwt-GroupPage");
 		initWidget(flowPanel);
-		flowPanel.setSize("1024px", "560px");
+		flowPanel.setSize("100%", "100%");
 		
 		FlowPanel flowPanel_1 = new FlowPanel();
 		flowPanel.add(flowPanel_1);
@@ -47,7 +47,7 @@ public class GroupPageGenerated extends Composite {
 		flexTable.getCellFormatter().setWidth(1, 0, "");
 		flexTable.getCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_RIGHT);
 		
-		Label lblTwojeGrupy = new Label("Twoje Grupy");
+		Label lblTwojeGrupy = new Label("Grupy, które utworzyłeś");
 		lblTwojeGrupy.setStyleName("gwt-GroupLabel");
 		flowPanel_1.add(lblTwojeGrupy);
 		

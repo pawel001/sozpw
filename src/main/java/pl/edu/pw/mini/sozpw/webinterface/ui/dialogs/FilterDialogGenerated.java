@@ -24,6 +24,7 @@ public class FilterDialogGenerated extends Composite {
 	private Button okButton;
 	private CheckBox sportCheckBox;
 	private CheckBox noCategoryCheckBox;
+	private TextBox filterTextBox;
 
 	public FilterDialogGenerated() {
 		
@@ -31,9 +32,17 @@ public class FilterDialogGenerated extends Composite {
 		flowPanel.setStyleName("gwt-FilterPanel");
 		initWidget(flowPanel);
 		
-		Label label = new Label("Pokaż notatki z kategorii:");
-		label.setStyleName("gwt-FilterLabel");
-		flowPanel.add(label);
+		Label lblPokaNotatkiZawierajce = new Label("Pokaż notatki zawierające tekst");
+		lblPokaNotatkiZawierajce.setStyleName("gwt-FilterLabel");
+		flowPanel.add(lblPokaNotatkiZawierajce);
+		
+		filterTextBox = new TextBox();
+		filterTextBox.setStyleName("gwt-FilterTextBox");
+		flowPanel.add(filterTextBox);
+		
+		Label lblKategoria = new Label("Kategoria");
+		lblKategoria.setStyleName("gwt-FilterLabel");
+		flowPanel.add(lblKategoria);
 		
 		FlexTable flexTable = new FlexTable();
 		flowPanel.add(flexTable);
@@ -62,7 +71,7 @@ public class FilterDialogGenerated extends Composite {
 		noCategoryCheckBox.setStyleName("gwt-LabelCustom");
 		flexTable.setWidget(1, 2, noCategoryCheckBox);
 		
-		Label lblNewLabel = new Label("Stworzona:");
+		Label lblNewLabel = new Label("Stworzona");
 		lblNewLabel.setStyleName("gwt-FilterLabel");
 		flowPanel.add(lblNewLabel);
 		
@@ -85,7 +94,7 @@ public class FilterDialogGenerated extends Composite {
 		createdBeforeDateBox = new DateBox();
 		flexTable_1.setWidget(1, 1, createdBeforeDateBox);
 		
-		Label lblWygasa = new Label("Wygasa:");
+		Label lblWygasa = new Label("Wygasa");
 		lblWygasa.setStyleName("gwt-FilterLabel");
 		flowPanel.add(lblWygasa);
 		
@@ -108,12 +117,12 @@ public class FilterDialogGenerated extends Composite {
 		expiryBeforeDateBox = new DateBox();
 		flexTable_2.setWidget(1, 1, expiryBeforeDateBox);
 		
-		Label lblSkierowanaDo = new Label("Skierowana do:");
+		Label lblSkierowanaDo = new Label("Skierowana do");
 		lblSkierowanaDo.setStyleName("gwt-FilterLabel");
 		flowPanel.add(lblSkierowanaDo);
 		
 		TextBox dedicationTextBox = new TextBox();
-		dedicationTextBox.setStyleName("gwt-FilterDedicationTextBox");
+		dedicationTextBox.setStyleName("gwt-FilterTextBox");
 		dedicationTextBox.getElement().setId("filterDedicationTextBox");
 		flowPanel.add(dedicationTextBox);
 		
@@ -179,5 +188,8 @@ public class FilterDialogGenerated extends Composite {
 	}
 	public CheckBox getNoCategoryCheckBox() {
 		return noCategoryCheckBox;
+	}
+	public TextBox getFilterTextBox() {
+		return filterTextBox;
 	}
 }

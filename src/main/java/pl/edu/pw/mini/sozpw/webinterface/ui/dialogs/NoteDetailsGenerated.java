@@ -42,7 +42,7 @@ public class NoteDetailsGenerated extends Composite {
 		flexTable.setWidget(0, 1, latLngTextBox);
 		latLngTextBox.setWidth("100%");
 		
-		Label lblLokacja = new Label("Lokacja");
+		Label lblLokacja = new Label("Lokalizacja");
 		lblLokacja.setStyleName("gwt-LabelCustom");
 		lblLokacja.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		flexTable.setWidget(1, 0, lblLokacja);

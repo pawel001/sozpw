@@ -8,6 +8,8 @@ import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Category;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Note;
 
 public class NoteFilter {
+	
+	String text;
 
 	List<Category> categories;
 
@@ -24,6 +26,8 @@ public class NoteFilter {
 	}
 
 	public void reset() {
+		text = "";
+		
 		categories = new ArrayList<Category>(Arrays.asList(Category.values()));
 		dedicatedTo = new ArrayList<String>();
 
@@ -35,6 +39,10 @@ public class NoteFilter {
 	}
 
 	public boolean pass(Note note) {
+		
+		if(!note.getTopic().toLowerCase().contains(text.toLowerCase()) && !note.getContent().toLowerCase().contains(text.toLowerCase()))
+			return false;
+		
 		if (!categories.contains(note.getCategory()))
 			return false;
 
@@ -61,6 +69,14 @@ public class NoteFilter {
 
 		return result;
 
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	public List<Category> getCategories() {

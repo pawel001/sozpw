@@ -15,11 +15,15 @@ import pl.edu.pw.mini.sozpw.webinterface.utils.NoteFilter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.maps.gwt.client.GoogleMap;
+import com.google.maps.gwt.client.GoogleMap.BoundsChangedHandler;
 import com.google.maps.gwt.client.LatLng;
+import com.google.maps.gwt.client.LatLngBounds;
 import com.google.maps.gwt.client.MapOptions;
 import com.google.maps.gwt.client.MapTypeId;
 import com.google.maps.gwt.client.Marker;
@@ -40,32 +44,100 @@ public class MainPage extends MainPageGenerated {
 	public MainPage(String username) {
 		this.username = username;
 		this.noteFilter = new NoteFilter();
+
 		initMap();
 		initTimer();
-		
-		getFiltersButton().addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				StyledDialogBox sdb = new StyledDialogBox("Filtruj wiadomości");
-				FilterDialog fd = new FilterDialog(MainPage.this, sdb, MainPage.this.noteFilter);
-				sdb.add(fd);
-				sdb.center();
-				fd.setTokenInput();
-				fd.initDedications(MainPage.this.noteFilter);
-			}
-		});
-		
-		getRefreshButton().addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				MainPage.this.initNotes();
+
+		getFiltersButton().addClickHandler(
+				new com.google.gwt.event.dom.client.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						StyledDialogBox sdb = new StyledDialogBox(
+								"Filtruj wiadomości");
+						FilterDialog fd = new FilterDialog(MainPage.this, sdb,
+								MainPage.this.noteFilter);
+						sdb.add(fd);
+						sdb.center();
+						fd.setTokenInput();
+						fd.initDedications(MainPage.this.noteFilter);
+					}
+				});
+
+		getRefreshButton().addClickHandler(
+				new com.google.gwt.event.dom.client.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						MainPage.this.initNotes();
+					}
+				});
+
+		getMyLocationButton().addClickHandler(
+				new com.google.gwt.event.dom.client.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						Geolocalizator.setToCurrentLatLng(map);
+						map.setZoom(17);
+					}
+				});
+
+		getMyNotesButton().addClickHandler(
+				new com.google.gwt.event.dom.client.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						LatLng ne = calculateLatLng(true, false);
+						LatLng sw = calculateLatLng(false, false);
+
+						if (ne != null && sw != null) {
+							LatLngBounds bounds = LatLngBounds.create(sw, ne);
+							map.panTo(bounds.getCenter());
+							map.setZoom(14);
+							while(!(map.getBounds().contains(ne) && map.getBounds().contains(sw))){
+								map.setZoom(map.getZoom()-1);
+							}
+						}
+
+					}
+				});
+
+		getForMeNotesButton().addClickHandler(
+				new com.google.gwt.event.dom.client.ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						LatLng ne = calculateLatLng(true, true);
+						LatLng sw = calculateLatLng(false, true);
+
+						if (ne != null && sw != null) {
+							LatLngBounds bounds = LatLngBounds.create(sw, ne);
+							map.panTo(bounds.getCenter());
+							map.setZoom(14);
+							while(!(map.getBounds().contains(ne) && map.getBounds().contains(sw))){
+								map.setZoom(map.getZoom()-0.1);
+							}
+						}
+
+					}
+				});
+
+		getScrollPanel().setHeight((Window.getClientHeight() - 270) + "px");
+		getMapPanel().setHeight((Window.getClientHeight()  - 220) + "px");
+		Window.addResizeHandler(new ResizeHandler() {
+			public void onResize(ResizeEvent event) {
+				int height = event.getHeight();
+				if (height < 600) {
+					height = 600;
+				}
+				getScrollPanel().setHeight((height - 270) + "px");
+				getMapPanel().setHeight((height - 220) + "px");
 			}
 		});
 	}
-	
-	private void initTimer(){
+
+	private void initTimer() {
 		(new Timer() {
 			@Override
 			public void run() {
@@ -74,7 +146,8 @@ public class MainPage extends MainPageGenerated {
 					nw.updateDateOnTimer();
 
 					for (int j = 0; j < nw.getCommentPanel().getWidgetCount(); j++) {
-						((CommentWidget) nw.getCommentPanel().getWidget(j)).updateDateOnTimer();
+						((CommentWidget) nw.getCommentPanel().getWidget(j))
+								.updateDateOnTimer();
 					}
 				}
 			}
@@ -89,36 +162,46 @@ public class MainPage extends MainPageGenerated {
 		myOptions.setMapTypeId(MapTypeId.ROADMAP);
 
 		map = GoogleMap.create(getMapPanel().getElement(), myOptions);
+
 		map.addClickListener(new MapClickHandler(this));
+		map.addBoundsChangedListener(new BoundsChangedHandler() {
+
+			@Override
+			public void handle() {
+				hideFromPanel();
+			}
+		});
+
+		Geolocalizator.setToDefaultPosition(map);
 		Geolocalizator.setToCurrentLatLng(map);
-		
+
 		initNotes();
-		
+
 	}
-	
-	public void initNotes(){
-		
+
+	public void initNotes() {
+
 		for (int i = 0; i < getNotesPanel().getWidgetCount(); i++) {
 			NoteWidget nw = (NoteWidget) getNotesPanel().getWidget(i);
 			nw.getMarker().setMap((GoogleMap) null);
 		}
-		
+
 		getNotesPanel().clear();
-		
+
 		noteService.getNotes(username, new AsyncCallback<List<Note>>() {
 
 			@Override
 			public void onSuccess(List<Note> result) {
 				for (Note note : result) {
-					if(MainPage.this.noteFilter.pass(note)){
+					if (MainPage.this.noteFilter.pass(note)) {
 						MainPage.this.addNoteToPanel(note);
-					}	
+					}
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				//Window.alert("NoteService.getNotes() failed.");
+				// Window.alert("NoteService.getNotes() failed.");
 			}
 		});
 	}
@@ -150,19 +233,20 @@ public class MainPage extends MainPageGenerated {
 
 	public void deleteNote(final Note note) {
 
-		noteService.deleteNote(Integer.valueOf(note.getId()), new AsyncCallback<Boolean>() {
+		noteService.deleteNote(Integer.valueOf(note.getId()),
+				new AsyncCallback<Boolean>() {
 
-			@Override
-			public void onSuccess(Boolean result) {
-				if (result)
-					deleteNoteFromPanel(note);
-			}
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result)
+							deleteNoteFromPanel(note);
+					}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				Window.alert("noteService.deleteNote failed.");
-			}
-		});
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("noteService.deleteNote failed.");
+					}
+				});
 	}
 
 	private void deleteNoteFromPanel(Note note) {
@@ -184,7 +268,10 @@ public class MainPage extends MainPageGenerated {
 
 	private void addNoteToPanel(final Note note) {
 		MarkerOptions markerOpts = MarkerOptions.create();
-		markerOpts.setPosition(LatLng.create(note.getLatitude(), note.getLongitude()));
+		LatLng position = LatLng
+				.create(note.getLatitude(), note.getLongitude());
+
+		markerOpts.setPosition(position);
 		markerOpts.setMap(map);
 		if (note.getUsername().equals(username)) {
 			markerOpts.setIcon("images/marker_red.png");
@@ -234,7 +321,8 @@ public class MainPage extends MainPageGenerated {
 			@Override
 			public void handle(MouseEvent event) {
 
-				final LatLng prevPosition = LatLng.create(note.getLatitude(), note.getLongitude());
+				final LatLng prevPosition = LatLng.create(note.getLatitude(),
+						note.getLongitude());
 
 				note.setLatitude(event.getLatLng().lat());
 				note.setLongitude(event.getLatLng().lng());
@@ -280,6 +368,56 @@ public class MainPage extends MainPageGenerated {
 
 	public void setNoteFilter(NoteFilter noteFilter) {
 		this.noteFilter = noteFilter;
+	}
+
+	private void hideFromPanel() {
+		LatLngBounds bounds = MainPage.this.map.getBounds();
+		for (int i = 0; i < getNotesPanel().getWidgetCount(); i++) {
+			NoteWidget nw = (NoteWidget) getNotesPanel().getWidget(i);
+			LatLng nwlatlng = LatLng.create(nw.getNote().getLatitude(), nw
+					.getNote().getLongitude());
+			nw.setVisible(bounds.contains(nwlatlng));
+		}
+	}
+
+	public LatLng calculateLatLng(boolean ne, boolean notesToMe) {
+		double lat = Double.MIN_VALUE;
+		double lng = Double.MIN_VALUE;
+
+		if (!ne) {
+			lat = Double.MAX_VALUE;
+			lng = Double.MAX_VALUE;
+		}
+
+		for (int i = 0; i < getNotesPanel().getWidgetCount(); i++) {
+			NoteWidget nw = (NoteWidget) getNotesPanel().getWidget(i);
+			if ((notesToMe && nw.getNote().getDedicationList()
+					.contains(username))
+					|| (!notesToMe && nw.getNote().getUsername()
+							.equals(username))) {
+				if (ne) {
+					if (nw.getNote().getLatitude() > lat) {
+						lat = nw.getNote().getLatitude();
+					}
+					if (nw.getNote().getLongitude() > lng) {
+						lng = nw.getNote().getLongitude();
+					}
+				} else {
+					if (nw.getNote().getLatitude() < lat) {
+						lat = nw.getNote().getLatitude();
+					}
+					if (nw.getNote().getLongitude() < lng) {
+						lng = nw.getNote().getLongitude();
+					}
+				}
+			}
+		}
+
+		if (lat != Double.MIN_VALUE && lng != Double.MIN_VALUE
+				&& lat != Double.MAX_VALUE && lng != Double.MAX_VALUE) {
+			return LatLng.create(lat, lng);
+		}
+		return null;
 	}
 
 }

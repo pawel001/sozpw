@@ -1,4 +1,4 @@
-﻿package pl.edu.pw.mini.sozpw.dataaccess.model;
+package pl.edu.pw.mini.sozpw.dataaccess.model;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -113,7 +113,7 @@ public class ModelImpl implements Model {
 			newUser.setPhone("");
 			newUser.setLastLoginDate(new Timestamp(date.getTime()));
 
-			// TODO SALT UŻYWANY JAKO REGISTER KEY
+			// TODO SALT UZYWANY JAKO REGISTER KEY
 			newUser.setUsername(username);
 			newUser.setLastLoginDate(new Timestamp(date.getTime()));
 			String key = RandomStringGenerator.randomString(30);

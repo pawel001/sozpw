@@ -6,6 +6,8 @@ import java.util.List;
 import pl.edu.pw.mini.sozpw.webinterface.dataobjects.Dedicated;
 import pl.edu.pw.mini.sozpw.webinterface.services.GroupService;
 import pl.edu.pw.mini.sozpw.webinterface.services.GroupServiceAsync;
+import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.InfoDialog;
+import pl.edu.pw.mini.sozpw.webinterface.ui.dialogs.StyledDialogBox;
 import pl.edu.pw.mini.sozpw.webinterface.ui.elements.GroupWidget;
 import pl.edu.pw.mini.sozpw.webinterface.utils.Validator;
 
@@ -61,6 +63,9 @@ public class GroupPage extends GroupPageGenerated {
 							@Override
 							public void onSuccess(Void result) {
 								mainPage.initNotes();
+								StyledDialogBox sdb = new StyledDialogBox("Potwierdzenie");
+								sdb.add(new InfoDialog(sdb, "Lista subskrybowanych grup została zaktualizowana"));
+								sdb.center();
 							}
 
 							@Override

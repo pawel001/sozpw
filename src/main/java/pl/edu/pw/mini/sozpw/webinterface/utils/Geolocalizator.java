@@ -16,7 +16,7 @@ import com.google.maps.gwt.client.LatLng;
 
 public class Geolocalizator {
 	
-	private static final LatLng defaultPosition = LatLng.create(40.69847032728747, -73.9514422416687);
+	private static final LatLng defaultPosition = LatLng.create(52.229830, 21.011733);
 	
 	public interface GeoCallback{
 		void geocodeSuccess(String location);
@@ -57,8 +57,11 @@ public class Geolocalizator {
 		
 	}
 	
+	public static void setToDefaultPosition(final GoogleMap map){
+		map.panTo(defaultPosition);
+	}
+	
 	public static void setToCurrentLatLng(final GoogleMap map){
-		map.setCenter(defaultPosition);
 		if (Geolocation.isSupported()) {
 			Geolocation.getIfSupported().getCurrentPosition(
 					new com.google.gwt.core.client.Callback<Position, PositionError>() {
@@ -66,7 +69,7 @@ public class Geolocalizator {
 						public void onSuccess(Position result) {
 							double lat = result.getCoordinates().getLatitude();
 							double lng = result.getCoordinates().getLongitude();
-							map.setCenter(LatLng.create(lat, lng));
+							map.panTo(LatLng.create(lat, lng));
 						}
 
 						@Override

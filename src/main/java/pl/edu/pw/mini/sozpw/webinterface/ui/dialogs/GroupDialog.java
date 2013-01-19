@@ -24,29 +24,30 @@ public class GroupDialog extends GroupDialogGenerated {
 
 	final String groupName;
 
-	public GroupDialog(String groupName, boolean isPrivate, final DialogBox parent) {
+	public GroupDialog(String groupName, boolean isPrivate,
+			final DialogBox parent) {
 		this.groupName = groupName;
 		getPublicCheckBox().setValue(isPrivate);
-		
+
 		getPublicCheckBox().addValueChangeHandler(
 				new ValueChangeHandler<Boolean>() {
 
 					@Override
 					public void onValueChange(ValueChangeEvent<Boolean> event) {
-							groupService.setGroupVisibility(GroupDialog.this.groupName, getPublicCheckBox().getValue(),
-									new AsyncCallback<Void>() {
+						groupService.setGroupVisibility(
+								GroupDialog.this.groupName, getPublicCheckBox()
+										.getValue(), new AsyncCallback<Void>() {
 
-										@Override
-										public void onSuccess(Void result) {
-											// TODO Auto-generated method stub
-										}
+									@Override
+									public void onSuccess(Void result) {
+										// TODO Auto-generated method stub
+									}
 
-										@Override
-										public void onFailure(Throwable caught) {
-											Window.alert("trueGroupVisibility() failed");
-										}
-									});
-
+									@Override
+									public void onFailure(Throwable caught) {
+										Window.alert("trueGroupVisibility() failed");
+									}
+								});
 					}
 				});
 

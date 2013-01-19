@@ -77,6 +77,8 @@ public class FilterDialog extends FilterDialogGenerated {
 	}-*/;
 
 	private void initDefault() {
+		getFilterTextBox().setValue("");
+		
 		getEntertainmentCheckBox().setValue(true);
 		getScienceCheckBox().setValue(true);
 		getSportCheckBox().setValue(true);
@@ -92,6 +94,8 @@ public class FilterDialog extends FilterDialogGenerated {
 	}
 
 	private void initFromNoteFilter(NoteFilter noteFilter) {
+		getFilterTextBox().setValue(noteFilter.getText());
+		
 		getEntertainmentCheckBox().setValue(
 				noteFilter.getCategories().contains(Category.ROZRYWKA));
 		getScienceCheckBox().setValue(
@@ -142,6 +146,8 @@ public class FilterDialog extends FilterDialogGenerated {
 	public NoteFilter retrieveNoteFilter() {
 		NoteFilter result = new NoteFilter();
 
+		result.setText(getFilterTextBox().getValue());
+		
 		result.setCategories(getCategories());
 
 		long createdBefore = Long.MAX_VALUE;

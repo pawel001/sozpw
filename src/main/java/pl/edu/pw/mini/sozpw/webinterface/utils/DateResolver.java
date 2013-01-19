@@ -139,8 +139,7 @@ public class DateResolver {
 		String prefix = "";
 		if (date.getHours() < 10) {
 			prefix = "0";
-		}
-		return prefix + date.getHours();
+		}		return prefix + date.getHours();
 	}
 
 	private static String minutes(Date date) {

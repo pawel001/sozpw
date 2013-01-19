@@ -87,12 +87,12 @@ public class LoginUI extends LoginUIGenerated {
 		String mail = getRegisterMail().getText();
 
 		if (!Validator.verifyName(username)) {
-			getRegisterLabel().setText("Niepoprawna nazwa użytkownika");
+			getRegisterLabel().setText("Nazwa użytkownika musi zawierać co najmniej 5 znaków (litery i cyfry).");
 			return;
 		}
 
 		if (!Validator.verifyPass(pass, passConf)) {
-			getRegisterLabel().setText("Niepoprawne/Niezgodne hasła");
+			getRegisterLabel().setText("Niepoprawne/Niezgodne hasła. Hasło musi zawierać co najmniej 6 znaków (litery i cyfry). ");
 			return;
 		}
 
@@ -118,7 +118,7 @@ public class LoginUI extends LoginUIGenerated {
 					sdb.add(new RegisterDialog(sdb));
 					sdb.center();
 				} else {
-					getRegisterLabel().setText("Błąd. Nie można zarejestrować użytkownika");
+					getRegisterLabel().setText("Błąd. Nie można zarejestrować użytkownika lub nazwa użytkownika niedostępna.");
 				}
 
 				getRegisterWaitImage().setVisible(false);

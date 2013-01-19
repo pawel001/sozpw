@@ -1,9 +1,9 @@
 package pl.edu.pw.mini.sozpw.webinterface.ui;
 
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -27,13 +27,15 @@ public class LoginUIGenerated extends Composite {
 
 	public LoginUIGenerated() {
 		
-		AbsolutePanel absolutePanel = new AbsolutePanel();
-		absolutePanel.setStyleName("gwt-contentPanel");
-		initWidget(absolutePanel);
-		absolutePanel.setSize("1024px", "600px");
+		FlowPanel flowPanel = new FlowPanel();
+		flowPanel.setStyleName("gwt-contentPanel");
+		initWidget(flowPanel);
+		flowPanel.setSize("100%", "100%");
 		
 		VerticalPanel verticalPanel = new VerticalPanel();
-		absolutePanel.add(verticalPanel, 523, 103);
+		flowPanel.add(verticalPanel);
+		verticalPanel.setStyleName("gwt-login");
+		verticalPanel.setSpacing(30);
 		verticalPanel.setSize("333px", "130px");
 		
 		FlexTable flexTable = new FlexTable();
@@ -72,14 +74,9 @@ public class LoginUIGenerated extends Composite {
 		loginLabel.setStylePrimaryName("gwt-LabelErr");
 		loginLabel.setStyleName("gwt-LabelErr");
 		loginLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-		loginLabel.setWordWrap(false);
-		
-		VerticalPanel verticalPanel_1 = new VerticalPanel();
-		absolutePanel.add(verticalPanel_1, 523, 276);
-		verticalPanel_1.setSize("333px", "206px");
 		
 		FlexTable flexTable_1 = new FlexTable();
-		verticalPanel_1.add(flexTable_1);
+		verticalPanel.add(flexTable_1);
 		flexTable_1.setSize("320px", "186px");
 		
 		Label lblLogin_1 = new Label("LOGIN");
@@ -137,12 +134,11 @@ public class LoginUIGenerated extends Composite {
 		flexTable_1.getCellFormatter().setVerticalAlignment(4, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 		
 		registerLabel = new Label("");
-		verticalPanel_1.add(registerLabel);
+		verticalPanel.add(registerLabel);
 		registerLabel.setHeight("20px");
 		registerLabel.setStylePrimaryName("gwt-LabelErr");
 		registerLabel.setStyleName("gwt-LabelErr");
 		registerLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-		registerLabel.setWordWrap(false);
 	}
 	protected TextBox getRegisterMail() {
 		return registerMail;
