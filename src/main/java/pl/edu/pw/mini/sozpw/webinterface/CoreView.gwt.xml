@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.5.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.5.0/distro-source/core/src/gwt-module.dtd">
+<module rename-to="coreview">
+    <inherits name="com.google.gwt.user.User" />
+    <inherits name="com.google.maps.gwt.GoogleMaps" />
+    <inherits name="com.google.gwt.user.theme.clean.Clean"/>
+    <entry-point class="pl.edu.pw.mini.sozpw.webinterface.client.CoreView" />
+    <source path="client"/>
+    <source path="ui"/>
+    <source path="services"/>
+    <source path="utils"/>
+    <source path="dataobjects"/>
+ </module>

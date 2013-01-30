@@ -155,6 +155,8 @@ img {
 
 .gwt-contentPanel {
 	background-color: #E8E8E8;
+	text-align: center;
+	margin-bottom: auto;
 }
 
 .gwt-mapCanvas {
@@ -216,6 +218,7 @@ img {
 	clear: left;
 	max-width: 300px;
 	min-width: 300px;
+	background-color: #FFFFFF;
 }
 
 .gwt-TextArea400 {
@@ -351,7 +354,7 @@ img {
 }
 
 .gwt-login {
-	margin-left: 48%;
+	margin-left: 40px;
 	margin-top: 50px;
 	margin-bottom: auto;
 }
@@ -364,4 +367,30 @@ img {
 	color: #1A1A1A;
 	font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
 	margin-bottom: 16px;
+}
+
+.gwt-contentPanelInside {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.gwt-ImageDownload {
+	cursor: pointer;
+}
+
+.gwt-TextArea300Red{
+	overflow: hidden;
+	height: 100%;
+	min-height: 20px;
+	width: 300px;
+	border: 1px solid #ABADB3;
+	cursor: text;
+	font-size: 11px;
+	font-family: 'Segoe UI', Tahoma, Helvetica, Sans-Serif;
+	margin: 0;
+	padding: 2px;
+	clear: left;
+	max-width: 300px;
+	min-width: 300px;
+	background-color: #ffcccc;
 }

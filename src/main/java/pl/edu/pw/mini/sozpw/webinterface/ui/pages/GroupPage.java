@@ -62,7 +62,7 @@ public class GroupPage extends GroupPageGenerated {
 
 							@Override
 							public void onSuccess(Void result) {
-								mainPage.initNotes();
+								mainPage.initNotes(false);
 								StyledDialogBox sdb = new StyledDialogBox("Potwierdzenie");
 								sdb.add(new InfoDialog(sdb, "Lista subskrybowanych grup została zaktualizowana"));
 								sdb.center();

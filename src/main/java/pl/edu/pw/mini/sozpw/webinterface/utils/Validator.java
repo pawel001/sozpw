@@ -12,19 +12,18 @@ public class Validator {
 	}
 
 	public static boolean verifyPass(String pass, String passConf) {
-		if(pass.length() < 6 || !pass.equals(passConf))
+		if (pass.length() < 6 || !pass.equals(passConf))
 			return false;
 
 		return true;
 	}
 
 	public static boolean verifyName(String username) {
-		
-		if(username.length() < 5)
+
+		if (username.length() < 5)
 			return false;
-		
-		RegExp regExp = RegExp
-				.compile("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*");
+
+		RegExp regExp = RegExp.compile("^[_a-zA-Z0-9-]+(\\.[_a-zA-Z0-9-]+)*");
 
 		return regExp.test(username);
 	}

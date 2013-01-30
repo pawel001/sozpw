@@ -36,7 +36,7 @@ import com.google.maps.gwt.client.MouseEvent;
 
 public class MainPage extends MainPageGenerated {
 
-	private GoogleMap map;
+	private GoogleMap map = null;
 	private String username;
 	private NoteServiceAsync noteService;
 	private NoteFilter noteFilter;
@@ -69,7 +69,7 @@ public class MainPage extends MainPageGenerated {
 
 					@Override
 					public void onClick(ClickEvent event) {
-						MainPage.this.initNotes();
+						MainPage.this.initNotes(true);
 					}
 				});
 
@@ -175,11 +175,11 @@ public class MainPage extends MainPageGenerated {
 		Geolocalizator.setToDefaultPosition(map);
 		Geolocalizator.setToCurrentLatLng(map);
 
-		initNotes();
+		initNotes(false);
 
 	}
 
-	public void initNotes() {
+	public void initNotes(final boolean hide) {
 
 		for (int i = 0; i < getNotesPanel().getWidgetCount(); i++) {
 			NoteWidget nw = (NoteWidget) getNotesPanel().getWidget(i);
@@ -195,6 +195,9 @@ public class MainPage extends MainPageGenerated {
 				for (Note note : result) {
 					if (MainPage.this.noteFilter.pass(note)) {
 						MainPage.this.addNoteToPanel(note);
+					}
+					if(hide){
+						hideFromPanel();
 					}
 				}
 			}

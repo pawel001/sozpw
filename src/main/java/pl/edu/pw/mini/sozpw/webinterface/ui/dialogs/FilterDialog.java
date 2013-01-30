@@ -43,7 +43,7 @@ public class FilterDialog extends FilterDialogGenerated {
 			@Override
 			public void onClick(ClickEvent event) {
 				mainPage.setNoteFilter(retrieveNoteFilter());
-				mainPage.initNotes();
+				mainPage.initNotes(false);
 				parent.hide();
 			}
 		});

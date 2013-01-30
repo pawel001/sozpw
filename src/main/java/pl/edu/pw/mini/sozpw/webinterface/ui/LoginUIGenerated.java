@@ -1,11 +1,14 @@
 package pl.edu.pw.mini.sozpw.webinterface.ui;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -24,6 +27,8 @@ public class LoginUIGenerated extends Composite {
 	private Button loginButton;
 	private Button registerButton;
 	private Image registerWaitImage;
+	private HorizontalPanel horizontalPanel;
+	private Image image;
 
 	public LoginUIGenerated() {
 		
@@ -32,8 +37,22 @@ public class LoginUIGenerated extends Composite {
 		initWidget(flowPanel);
 		flowPanel.setSize("100%", "100%");
 		
+		horizontalPanel = new HorizontalPanel();
+		horizontalPanel.setStyleName("gwt-contentPanelInside");
+		horizontalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		flowPanel.add(horizontalPanel);
+		
+		image = new Image("images/mobiledownload.png");
+		image.setStyleName("gwt-ImageDownload");
+		Anchor link = new Anchor();
+		link.setTarget("_blank");
+		link.setHref(GWT.getHostPageBaseURL() + "GPNote.apk");
+		link.getElement().appendChild(image.getElement());
+		horizontalPanel.add(link);
+		image.setSize("400px ", "360px");
+		
 		VerticalPanel verticalPanel = new VerticalPanel();
-		flowPanel.add(verticalPanel);
+		horizontalPanel.add(verticalPanel);
 		verticalPanel.setStyleName("gwt-login");
 		verticalPanel.setSpacing(30);
 		verticalPanel.setSize("333px", "130px");

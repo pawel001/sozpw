@@ -24,6 +24,7 @@ public class GroupPageGenerated extends Composite {
 		
 		FlowPanel flowPanel_1 = new FlowPanel();
 		flowPanel.add(flowPanel_1);
+		flowPanel_1.setHeight("");
 		flowPanel_1.setStyleName("gwt-insidePanel");
 		
 		Label lblGrupyDoKtrych = new Label("Subskrybowane grupy");
